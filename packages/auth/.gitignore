@@ -1,0 +1,6 @@
+.env.*
+!.env.default
+coverage/
+.vscode/
+.idea/
+dist/

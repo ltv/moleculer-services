@@ -1,0 +1,33 @@
+{
+  "name": "moleculer-services",
+  "version": "0.1.0",
+  "description": "Core services using for moleculerjs framework",
+  "repository": "git@github.com:ltv/moleculer-services.git",
+  "author": "Luc <luc@ltv.vn>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/ts-jest",
+      "**/ts-jest/**",
+      "**/ts-node",
+      "**/ts-node/**",
+      "**/jest",
+      "**/jest/**",
+      "**/@types/jest",
+      "**/@types/jest/**",
+      "**/@types/node",
+      "**/@types/node/**"
+    ]
+  },
+  "scripts": {
+    "ci": "git-cz",
+    "commit": "git-cz"
+  },
+  "devDependencies": {
+    "git-cz": "^4.3.1"
+  }
+}

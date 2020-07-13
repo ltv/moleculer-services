@@ -1,0 +1,13 @@
+{
+  "name": "@app/types",
+  "version": "0.1.0",
+  "private": true,
+  "author": {
+    "name": "Luc Duong",
+    "email": "luc@ltv.vn"
+  },
+  "devDependencies": {
+    "moleculer": "^0.14.5"
+  },
+  "type": "index.d.ts"
+}

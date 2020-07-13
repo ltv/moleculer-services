@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  },
+  "baseUrl": "./",
+  "paths": {
+    "core/*": ["core/*"],
+    "models/*": ["models/*"],
+    "utils/*": ["utils/*"],
+    "mixins/*": ["mixins/*"],
+    "services/*": ["services/*"],
+    "tests/*": ["tests/*"]
+  },
+}
