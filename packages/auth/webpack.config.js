@@ -7,13 +7,12 @@ function resolve(dir) {
 }
 
 function walkSync(dir, filelist = []) {
-  fs.readdirSync(dir).forEach(file => {
+  fs.readdirSync(dir).forEach((file) => {
     const dirFile = path.join(dir, file);
     try {
       filelist = walkSync(dirFile, filelist);
     } catch (err) {
-      if (err.code === 'ENOTDIR' || err.code === 'EBUSY')
-        filelist = [...filelist, dirFile];
+      if (err.code === 'ENOTDIR' || err.code === 'EBUSY') filelist = [...filelist, dirFile];
       else throw err;
     }
   });
@@ -22,8 +21,8 @@ function walkSync(dir, filelist = []) {
 
 function getEntries() {
   return walkSync('./services')
-    .filter(file => file.match(/.*\.service\.ts$/))
-    .map(file => {
+    .filter((file) => file.match(/.*\.service\.ts$/))
+    .map((file) => {
       return {
         name: file.substring(0, file.length - 3),
         path: `./${file}`
@@ -40,20 +39,20 @@ function getEntries() {
 
 const nodeModules = {};
 fs.readdirSync('node_modules')
-  .filter(function(x) {
+  .filter(function (x) {
     return ['.bin'].indexOf(x) === -1;
   })
-  .forEach(function(mod) {
+  .forEach(function (mod) {
     nodeModules[mod] = 'commonjs ' + mod;
   });
 
 if (fs.existsSync('../../node_modules')) {
   console.log('Existed parent node_modules');
   fs.readdirSync('../../node_modules')
-    .filter(function(x) {
+    .filter(function (x) {
       return ['.bin'].indexOf(x) === -1;
     })
-    .forEach(function(mod) {
+    .forEach(function (mod) {
       nodeModules[mod] = 'commonjs ' + mod;
     });
 }
@@ -96,6 +95,7 @@ module.exports = {
       models: resolve('models'),
       mixins: resolve('mixins'),
       services: resolve('services'),
+      errors: resolve('errors'),
       tests: resolve('tests'),
       core: resolve('core')
     }

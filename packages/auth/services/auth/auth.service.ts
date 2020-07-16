@@ -1,28 +1,44 @@
-import { ConfigMixin } from '@app/core/mixins/config.mixin';
 import createHashIds from '@app/core/utils/hashids';
 import { BaseService } from '@app/types';
 import crypto from 'crypto';
+import { AuthError } from 'errors';
+import { generateToken as generateJWTToken, verifyJWT } from 'helpers/jwt';
+import { comparePassword, genSalt, hashPass, sha512 } from 'helpers/password';
+import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
-import { Context, Errors } from 'moleculer';
+import { Context } from 'moleculer';
 import { Action, Method, Service } from 'moleculer-decorators';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
-import { SERVICE_AUTH, SERVICE_USERS, SERVICE_CONFIGS } from 'utils/constants';
-import { generateToken, verifyJWT } from '../../helpers/jwt';
-import { comparePassword, genSalt, hashPass } from '../../helpers/password';
+import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
 import { AuthLoginRule } from './validators/index.validator';
 
-const { MoleculerClientError } = Errors;
 const name = SERVICE_AUTH;
 const hashIds = createHashIds(name, 10);
+
+interface AuthLoginParams {
+  username: string;
+  password: string;
+  token: string;
+}
+
+interface JWTToken {
+  id: string;
+  expired: boolean;
+}
+
+type DecodedJWT = JWTToken;
 
 // export default AuthServiceSchema;
 @Service({
   name: SERVICE_AUTH,
   version: 1,
   settings: {},
-  mixins: [
-    ConfigMixin(['site.**', 'users.**'], { serviceName: SERVICE_CONFIGS })
-  ]
+  hooks: {
+    after: {
+      login: ['saveToken']
+    }
+  },
+  mixins: [ConfigMixin(['site.**', 'users.**'])]
 })
 class AuthService extends BaseService {
   @Action({
@@ -39,70 +55,45 @@ class AuthService extends BaseService {
   @Action({
     params: AuthLoginRule
   })
-  async login(ctx: Context<any>) {
-    let query;
-    if (this.configs['users.username.enabled']) {
-      query = {
-        $or: [{ email: ctx.params.email }, { username: ctx.params.email }]
-      };
-    } else {
-      query = { email: ctx.params.email };
-    }
+  async login(ctx: Context<AuthLoginParams>) {
+    const query = ((username) => {
+      if (!this.configs['users.username.enabled']) {
+        return { email: username };
+      }
+      return { $or: [{ email: username }, { username }] };
+    })(ctx.params.username);
 
     // Get user
-    // const user = await this.adapter.findOne(query);
-    const user: User = await ctx
-      .call(`v1.${SERVICE_USERS}.find`, { query })
-      .then((users: User[]) => users[0]);
-    if (!user)
-      throw new MoleculerClientError(
-        'User not found!',
-        400,
-        'ERR_USER_NOT_FOUND'
-      );
+    const user: User = await ctx.call(`v1.${SERVICE_USERS}.findOneUser`, { query });
+    if (!user) {
+      return AuthError.authenticationFailed().reject();
+    }
 
     // Check verified
     if (!user.verified) {
-      throw new MoleculerClientError(
-        'Please activate your account!',
-        400,
-        'ERR_ACCOUNT_NOT_VERIFIED'
-      );
+      return AuthError.userIsNotVerified().reject();
     }
 
     // Check status
     if (user.status !== 1) {
-      throw new MoleculerClientError(
-        'Account is disabled!',
-        400,
-        'ERR_ACCOUNT_DISABLED'
-      );
+      return AuthError.userIsNotActive().reject();
     }
 
     // Check passwordless login
-    if (user.passwordless == true && ctx.params.password)
-      throw new MoleculerClientError(
-        'This is a passwordless account! Please login without password.',
-        400,
-        'ERR_PASSWORDLESS_WITH_PASSWORD'
-      );
+    if (user.passwordless == true && ctx.params.password) {
+      return AuthError.passwordLessOnly().reject();
+    }
 
     // Authenticate
     if (ctx.params.password) {
       // Login with password
-      if (!comparePassword(ctx.params.password, user.password))
-        throw new MoleculerClientError(
-          'Wrong password!',
-          400,
-          'ERR_WRONG_PASSWORD'
-        );
+      if (!comparePassword(ctx.params.password, user.password)) {
+        return AuthError.authenticationFailed().reject();
+      }
     } else if (this.configs['users.passwordless.enabled']) {
-      if (!this.configs['mail.enabled'])
-        throw new MoleculerClientError(
-          'Passwordless login is not available because mail transporter is not configured.',
-          400,
-          'ERR_PASSWORDLESS_UNAVAILABLE'
-        );
+      if (!this.configs['mail.enabled']) {
+        return AuthError.passwordLessNotAvailable().reject();
+      }
 
       // Send magic link
       await this.sendMagicLink(ctx, user);
@@ -112,36 +103,23 @@ class AuthService extends BaseService {
         email: user.email
       };
     } else {
-      throw new MoleculerClientError(
-        'Passwordless login is not allowed.',
-        400,
-        'ERR_PASSWORDLESS_DISABLED'
-      );
+      return AuthError.passwordLessNotAllowed().reject();
     }
 
     // Check Two-factor authentication
     if (user.tfa && user.tfa.enabled) {
-      if (!ctx.params.token)
-        throw new MoleculerClientError(
-          'Two-factor authentication is enabled. Please give the 2FA code.',
-          400,
-          'ERR_MISSING_2FA_CODE'
-        );
+      if (!ctx.params.token) {
+        return AuthError.missing2FACode().reject();
+      }
 
-      if (!(await this.verify2FA(user.tfa.secret, ctx.params.token)))
-        throw new MoleculerClientError(
-          'Invalid 2FA token!',
-          400,
-          'TWOFACTOR_INVALID_TOKEN'
-        );
+      if (!(await this.verify2FA(user.tfa.secret, ctx.params.token))) {
+        return AuthError.invalid2FACode().reject();
+      }
     }
 
-    const token = generateToken(
-      { id: user._id.toString() },
-      this.configs['users.jwt.expiresIn']
-    );
-
-    return { token };
+    const userId = user._id.toString();
+    const token = generateJWTToken({ id: userId }, this.configs['users.jwt.expiresIn']);
+    return { token, userId };
   }
 
   /**
@@ -153,54 +131,37 @@ class AuthService extends BaseService {
   })
   async register(ctx: Context<User>) {
     if (!this.configs['users.signup.enabled']) {
-      throw new MoleculerClientError(
-        'Sign up is not available.',
-        400,
-        'ERR_SIGNUP_DISABLED'
-      );
+      return AuthError.signUpNotAvailable().reject();
     }
 
     const params = Object.assign({}, ctx.params);
     const entity: Partial<User> = {};
 
+    const { email, username } = params;
+
     // Verify email
-    const found = await ctx.call(`v1.${SERVICE_USERS}.getUserByEmail`, {
-      email: params.email
-    });
+    const found = await ctx.call(`v1.${SERVICE_USERS}.getUserByEmail`, { email });
     if (found) {
-      throw new MoleculerClientError(
-        'Email has already been registered.',
-        400,
-        'ERR_EMAIL_EXISTS'
-      );
+      return AuthError.emailAlreadyExists().reject();
     }
 
     // Verify username
     if (this.configs['users.username.enabled']) {
-      if (!ctx.params.username) {
-        throw new MoleculerClientError(
-          "Username can't be empty.",
-          400,
-          'ERR_USERNAME_EMPTY'
-        );
+      if (!username) {
+        return AuthError.usernameCantEmpty().reject();
       }
 
-      const found = await ctx.call(`v1.${SERVICE_USERS}.getUserByUsername`, {
-        username: params.username
-      });
+      const found = await ctx.call(`v1.${SERVICE_USERS}.getUserByUsername`, { username });
+
       if (found) {
-        throw new MoleculerClientError(
-          'Username has already been registered.',
-          400,
-          'ERR_USERNAME_EXISTS'
-        );
+        return AuthError.usernameAlreadyExists().reject();
       }
 
-      entity.username = params.username;
+      entity.username = username;
     }
 
     // Set basic data
-    entity.email = params.email;
+    entity.email = email;
     entity.firstName = params.firstName;
     entity.lastName = params.lastName;
     entity.role = this.configs['users.defaultRole'];
@@ -225,11 +186,7 @@ class AuthService extends BaseService {
       entity.passwordless = true;
       entity.password = this.generateToken();
     } else {
-      throw new MoleculerClientError(
-        "Password can't be empty.",
-        400,
-        'ERR_PASSWORD_EMPTY'
-      );
+      return AuthError.passwordCantEmpty().reject();
     }
 
     // Generate verification token
@@ -263,42 +220,67 @@ class AuthService extends BaseService {
   @Action({
     cache: {
       keys: ['token'],
-      ttl: 60 * 60 // 1 hour
+      ttl: 60 * 30 // 30 mins
     },
     params: {
       token: 'string'
     }
   })
   async resolveToken(ctx: Context<Token>) {
-    const decoded: any = verifyJWT(ctx.params.token);
-    if (!decoded.id)
-      throw new MoleculerClientError('Invalid token', 401, 'INVALID_TOKEN');
+    const { id } = await this.verifyJWTToken(ctx.params.token);
 
-    const user: User = await ctx.call(`v1.${SERVICE_USERS}.findById`, {
-      id: decoded.id
-    });
-    if (!user)
-      throw new MoleculerClientError(
-        'User is not registered',
-        401,
-        'USER_NOT_FOUND'
-      );
+    const user: User = await ctx.call(`v1.${SERVICE_USERS}.findById`, { id });
+    if (!user) {
+      return AuthError.userIsNotRegistered().reject();
+    }
 
-    if (!user.verified)
-      throw new MoleculerClientError(
-        'Please activate your account!',
-        401,
-        'ERR_ACCOUNT_NOT_VERIFIED'
-      );
+    if (!user.verified) {
+      return AuthError.userIsNotVerified({ code: 401 }).reject();
+    }
 
-    if (user.status !== 1)
-      throw new MoleculerClientError('User is disabled', 401, 'USER_DISABLED');
+    if (user.status !== 1) {
+      return AuthError.userIsNotActive({ code: 401 }).reject();
+    }
 
     return user;
   }
   // ACTIONS (E)
 
   // METHODS (S)
+  @Method
+  saveToken(ctx: Context, response: { token: string; userId: string }) {
+    const { token, userId } = response;
+    return ctx.broker
+      .call(`v1.${SERVICE_TOKEN}.create`, { userId, token, when: Date.now() })
+      .then(() => ({ token }));
+  }
+
+  @Method
+  async verifyJWTToken(token: string): Promise<DecodedJWT> {
+    const decoded: any = await verifyJWT(token);
+    if (!decoded.id) {
+      return AuthError.invalidToken().reject();
+    }
+    const userId = decoded.id;
+    const hashedToken = sha512(token);
+    const foundToken = await this.broker.call<Token, any>(`v1.${SERVICE_TOKEN}.findToken`, {
+      userId,
+      token: hashedToken
+    });
+
+    if (!foundToken || !decoded.exp) {
+      return AuthError.tokenHasExpired().reject();
+    }
+
+    const exp = (decoded.exp as number) * 1000;
+    const expired = exp - Date.now() < 0;
+
+    if (expired) {
+      return AuthError.tokenHasExpired().reject();
+    }
+
+    return { id: decoded.id, expired: false };
+  }
   /**
    * Generate a token
    *

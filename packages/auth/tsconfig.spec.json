@@ -9,6 +9,7 @@
     "utils/*": ["utils/*"],
     "mixins/*": ["mixins/*"],
     "services/*": ["services/*"],
+    "errors/*": ["errors/*"],
     "tests/*": ["tests/*"]
-  },
+  }
 }

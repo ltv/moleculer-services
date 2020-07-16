@@ -29,7 +29,7 @@ const { match } = require('moleculer').Utils;
       'users.verification.enabled': false,
       'users.defaultRole': ROLE_USER,
       'users.defaultPlan': 'free',
-      'users.jwt.expiresIn': '30d',
+      'users.jwt.expiresIn': '30m',
       'users.two-factor.enabled': true
     }
   }

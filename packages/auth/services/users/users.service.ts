@@ -1,8 +1,8 @@
 import { CacheCleaner } from '@app/core/mixins/cache.cleaner.mixin';
-import { ConfigMixin } from '@app/core/mixins/config.mixin';
 import { MongooseMixin, MongooseServiceSchema } from '@app/core/mixins/mongoose.mixin';
 import { BaseService, ServiceMetadata } from '@app/types';
 import { AuthorizeMixin } from 'mixins/authorize.mixin';
+import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
 import { Context, Errors } from 'moleculer';
 import { Action, Service } from 'moleculer-decorators';
@@ -10,8 +10,7 @@ import {
   ERR_USER_ALREADY_DISABLED,
   ERR_USER_ALREADY_ENABLED,
   ROLE_ADMIN,
-  SERVICE_USERS,
-  SERVICE_CONFIGS
+  SERVICE_USERS
 } from 'utils/constants';
 
 const { MoleculerClientError } = Errors;
@@ -24,7 +23,7 @@ interface UserService extends BaseService, MongooseServiceSchema<User> {}
   mixins: [
     MongooseMixin(User),
     CacheCleaner(['cache.clean.users']),
-    ConfigMixin(['site.**', 'users.**'], { serviceName: SERVICE_CONFIGS }),
+    ConfigMixin(['site.**', 'users.**']),
     AuthorizeMixin({
       list: [ROLE_ADMIN],
       get: [ROLE_ADMIN],
@@ -224,6 +223,23 @@ class UserService extends BaseService implements UserService {
   async getUserByUsername(ctx: Context<{ username: string }>) {
     const { username } = ctx.params;
     return await this.adapter.findOne({ username });
+  }
+
+  /**
+   * Get user by username
+   *
+   * @param {String} username
+   */
+  @Action({
+    cache: {
+      keys: ['query']
+    },
+    params: {
+      query: 'object'
+    }
+  })
+  findOneUser(ctx: Context<{ query: any }>) {
+    return this.adapter.findOne(ctx.params.query);
   }
   // ACTIONS (E)
   async started() {

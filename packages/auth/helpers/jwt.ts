@@ -1,3 +1,4 @@
+import { AuthError } from 'errors';
 import fs from 'fs';
 import jwt, { SignOptions, VerifyOptions } from 'jsonwebtoken';
 import path from 'path';
@@ -80,11 +81,7 @@ function getVerifyOptions(options?: SignOptions): VerifyOptions {
  *
  * @param {String} token
  */
-export function verifyJWT(
-  token: string,
-  publicKEY?: string,
-  options?: SignOptions
-) {
+export function verifyJWT(token: string, publicKEY?: string, options?: SignOptions) {
   if (!publicKEY) {
     publicKEY = getPublicKey();
   }
@@ -92,9 +89,9 @@ export function verifyJWT(
   const verifyOptions = getVerifyOptions(options);
 
   try {
-    return jwt.verify(token, publicKEY, verifyOptions);
+    return Promise.resolve(jwt.verify(token, publicKEY, verifyOptions));
   } catch (err) {
-    return false;
+    return AuthError.invalidToken({ message: err.message }).reject();
   }
 }
 

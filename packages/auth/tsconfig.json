@@ -19,6 +19,7 @@
       "utils/*": ["utils/*"],
       "mixins/*": ["mixins/*"],
       "services/*": ["services/*"],
+      "errors/*": ["errors/*"],
       "tests/*": ["tests/*"]
     },
     "typeRoots": ["node_modules/@types", "@types"],

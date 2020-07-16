@@ -15,6 +15,13 @@ export function sha512(password: string) {
     .digest('hex');
 }
 
+export function sha256(password: string) {
+  return crypto
+    .createHmac('sha256', HASH_SECRET)
+    .update(password + GLOBAL_PEPPER_KEY)
+    .digest('hex');
+}
+
 export function hashPass(password: string, passwordSalt: string) {
   const hashed512 = sha512(password);
   return bcrypt.hashSync(hashed512, passwordSalt);

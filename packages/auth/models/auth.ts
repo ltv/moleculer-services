@@ -1,4 +1,4 @@
-import { index, modelOptions, plugin, prop } from '@typegoose/typegoose';
+import { index, modelOptions, plugin, prop, Severity } from '@typegoose/typegoose';
 import { ObjectId } from 'mongodb';
 import { BaseModel, BaseWithCreatorAndTimestamp } from './base';
 import { hashPassword } from './plugins/hashPassword';
@@ -46,7 +46,7 @@ export class User extends BaseWithCreatorAndTimestamp {
   @prop({ readonly: true })
   avatar?: string;
 
-  @prop({ minlength: 8, maxlength: 60 })
+  @prop({ minlength: 8, maxlength: 60, hide: true })
   password?: string;
   @prop({ hide: true })
   passwordSalt?: string;
@@ -77,9 +77,6 @@ export class User extends BaseWithCreatorAndTimestamp {
   @prop({ hide: true })
   verificationToken?: string;
 
-  @prop({ type: String })
-  typeStocks?: string[];
-
   // 'tfa.enabled': { type: 'boolean', default: false }, // Two Factor Authentication
   @prop({ type: TwoFactorAuth, _id: false, readonly: true })
   tfa?: TwoFactorAuth;
@@ -91,6 +88,9 @@ export class User extends BaseWithCreatorAndTimestamp {
   lastLoginAt?: number;
 }
 
+@modelOptions({
+  options: { allowMixed: Severity.ALLOW }
+})
 export class Token extends BaseModel {
   @prop({ required: true })
   userId: ObjectId | string;

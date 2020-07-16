@@ -1,10 +1,9 @@
 import { Context } from '@app/types';
+import { AuthError } from 'errors';
 import pick from 'lodash.pick';
 import { User } from 'models';
-import ApiService from 'moleculer-web';
 import { ROLE_EVERYONE, SERVICE_AUTH } from 'utils/constants';
 
-const { UnAuthorizedError, ERR_INVALID_TOKEN } = ApiService.Errors;
 interface ClientRequest {
   originalUrl: string;
   method: string;
@@ -50,5 +49,5 @@ export async function authenticate(ctx: Context, _: any, req: ClientRequest) {
     }
     return undefined;
   }
-  return Promise.reject(new UnAuthorizedError(ERR_INVALID_TOKEN, { token }));
+  return AuthError.invalidToken().reject();
 }

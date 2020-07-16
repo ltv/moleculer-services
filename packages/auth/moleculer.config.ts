@@ -55,7 +55,7 @@ const cacher: any = {
   type: 'Redis',
   options: {
     // Prefix for keys
-    prefix: 'PRF',
+    prefix: 'LTV',
     // set Time-to-live to 30sec.
     ttl: 30
   }
