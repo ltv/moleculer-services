@@ -35,7 +35,8 @@ type DecodedJWT = JWTToken;
   settings: {},
   hooks: {
     after: {
-      login: ['saveToken']
+      login: ['saveToken'],
+      register: ['notifyRegistered']
     }
   },
   mixins: [ConfigMixin(['site.**', 'users.**'])]
@@ -277,6 +278,25 @@ class AuthService extends BaseService {
   @Method
   generateToken(len = 25) {
     return crypto.randomBytes(len).toString('hex');
+  }
+
+  @Method
+  notifyRegistered(ctx: Context, user: User) {
+    return ctx
+      .emit(`${SERVICE_AUTH}.registered`, user)
+      .then(() => this.emailRegisteredUser(user))
+      .then(() =>
+        this.logger.info(
+          `Emit new user registered with username: ${user.username} and email: ${user.email}`
+        )
+      )
+      .then(() => user);
+  }
+
+  @Method
+  emailRegisteredUser(user: User) {
+    // TODO: Email if enable email service
+    return Promise.resolve(user);
   }
   // METHODS (E)
 }

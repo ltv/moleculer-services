@@ -29,9 +29,21 @@
     "serve:docs": "yarn workspace @app/docs run serve",
     "serve:auth": "yarn workspace @app/auth run serve",
     "build:docs:image": "docker build --file packages/docs/Dockerfile packages --tag ms-docs",
-    "build:auth:image": "docker build --file packages/auth/Dockerfile . --tag ms-auth"
+    "build:auth:image": "docker build --file packages/auth/Dockerfile . --tag ms-auth",
+    "release": "lerna publish",
+    "precommit": "lint-staged"
   },
   "devDependencies": {
-    "git-cz": "^4.3.1"
+    "git-cz": "^4.3.1",
+    "husky": "^4.2.5",
+    "lerna": "^3.22.1",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5"
+  },
+  "lint-staged": {
+    "{packages}/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
