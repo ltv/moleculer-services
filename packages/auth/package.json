@@ -10,7 +10,8 @@
     "serve": "export NODE_PATH=./ && node -r ts-node/register node_modules/.bin/moleculer-runner --hot --repl --envfile=.env.development services --mask **/*.service.ts --config moleculer.config.ts",
     "start:prod": "moleculer-runner --env --mask **/*.service.js --config moleculer.config.js",
     "test:unit": "jest --coverage",
-    "build": "rimraf dist/* && webpack --node-args='--stack_size=6144 --max-old-space-size=6144' --progress --colors"
+    "build": "rimraf dist/* && webpack --node-args='--stack_size=6144 --max-old-space-size=6144' --progress --colors",
+    "test": "jest"
   },
   "dependencies": {
     "@typegoose/typegoose": "^7.2.0",

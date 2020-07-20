@@ -31,7 +31,8 @@
     "build:docs:image": "docker build --file packages/docs/Dockerfile packages --tag ms-docs",
     "build:auth:image": "docker build --file packages/auth/Dockerfile . --tag ms-auth",
     "release": "lerna publish",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "test": "lerna run test --stream"
   },
   "devDependencies": {
     "git-cz": "^4.3.1",

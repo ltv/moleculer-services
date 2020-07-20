@@ -6,6 +6,9 @@
     "name": "Luc Duong",
     "email": "luc@ltv.vn"
   },
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "hashids": "^2.2.1",
     "lodash.defaultsdeep": "^4.6.1",

@@ -6,6 +6,9 @@
     "name": "Luc Duong",
     "email": "luc@ltv.vn"
   },
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
     "moleculer": "^0.14.5"
   },
