@@ -1,6 +1,6 @@
+import { CreateHealthCheckMiddleware, FindEntityMiddleware } from '@app/core/middlewares';
 import { BrokerOptions, Errors, LoggerConfig, TracerOptions } from 'moleculer';
 import os from 'os';
-import { CreateHealthCheckMiddleware } from '@app/core/middlewares';
 
 const nodeIDPrefix = process.env.NODE_ID || '';
 const osHostName = os.hostname().toLowerCase();
@@ -55,7 +55,7 @@ const cacher: any = {
   type: 'Redis',
   options: {
     // Prefix for keys
-    prefix: 'LTV',
+    prefix: process.env.REDIS_PREFIX || 'AUTH',
     // set Time-to-live to 30sec.
     ttl: 30
   }
@@ -114,8 +114,7 @@ const tracing: TracerOptions = TRACING_TYPE
   ? {
       enabled: true,
       exporter: {
-        // type: 'Console',
-        type: TRACING_TYPE || 'console',
+        type: TRACING_TYPE || 'Console',
         options: tracingOpts
       },
       stackTrace: true
@@ -194,7 +193,7 @@ const brokerConfig: BrokerOptions = {
   tracing,
 
   // Register custom middlewares
-  middlewares: [CreateHealthCheckMiddleware(healthCheckOpts)],
+  middlewares: [CreateHealthCheckMiddleware(healthCheckOpts), FindEntityMiddleware()],
 
   replCommands: null
 };

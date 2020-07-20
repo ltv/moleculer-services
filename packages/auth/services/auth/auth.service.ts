@@ -2,14 +2,14 @@ import createHashIds from '@app/core/utils/hashids';
 import { BaseService } from '@app/types';
 import crypto from 'crypto';
 import { AuthError } from 'errors';
-import { generateToken as generateJWTToken, verifyJWT } from 'helpers/jwt';
-import { comparePassword, genSalt, hashPass, sha512 } from 'helpers/password';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
 import { Context } from 'moleculer';
 import { Action, Method, Service } from 'moleculer-decorators';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
+import { generateToken as generateJWTToken, verifyJWT } from 'utils/jwt';
+import { comparePassword, genSalt, hashPass, sha512 } from 'utils/password';
 import { AuthLoginRule } from './validators/index.validator';
 
 const name = SERVICE_AUTH;
@@ -198,20 +198,8 @@ class AuthService extends BaseService {
     // Create new user
     const user = await ctx.call(`v1.${SERVICE_USERS}.insertUser`, { entity });
 
-    // Send email TODO
-    // if (user.verified) {
-    //   // Send welcome email
-    //   this.sendMail(ctx, user, 'welcome');
-    //   user.token = await this.getToken(user);
-    // } else {
-    //   // Send verification email
-    //   this.sendMail(ctx, user, 'activate', { token: entity.verificationToken });
-    // }
     if (!entity.verified) {
-      ctx.emit(`${SERVICE_USERS}.createdUserMail`, {
-        user,
-        token: entity.verificationToken
-      });
+      ctx.emit(`${SERVICE_USERS}.createdUserMail`, { user, token: entity.verificationToken });
     }
 
     return user;

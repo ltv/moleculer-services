@@ -1,6 +1,7 @@
-import { Errors } from 'moleculer';
+import { BaseError, ErrorMessage, IError } from './base.error';
 
-const { MoleculerError, MoleculerClientError } = Errors;
+export * from './base.error';
+export * from './db.error';
 
 export const ERR_NO_TOKEN = 'NO_TOKEN';
 export const ERR_INVALID_TOKEN = 'INVALID_TOKEN';
@@ -8,193 +9,75 @@ export const ERR_UNABLE_DECODE_PARAM = 'UNABLE_DECODE_PARAM';
 export const ERR_ORIGIN_NOT_FOUND = 'ORIGIN_NOT_FOUND';
 export const ERR_ORIGIN_NOT_ALLOWED = 'ORIGIN_NOT_ALLOWED';
 
-/**
- * Invalid request
- *
- * @class InvalidRequestError
- * @extends {Error}
- */
-export class InvalidRequestError extends MoleculerError {
-  /**
-   * Creates an instance of InvalidRequestBodyError.
-   *
-   * @param {any} body
-   * @param {any} error
-   *
-   * @memberOf InvalidRequestBodyError
-   */
-  constructor(message?: string, code?: string, data?: any) {
-    super(message || 'Invalid request', 400, code || 'INVALID_REQUEST', data);
-  }
-}
+const AppErrorMap: { [key: string]: IError } = {
+  INVALID_REQUEST: {
+    type: 'INVALID_REQUEST',
+    message: 'Invalid request',
+    code: 400,
+  },
+  INVALID_REQUEST_BODY: {
+    type: 'INVALID_REQUEST_BODY',
+    message: 'Invalid request body',
+    code: 400,
+  },
+  INVALID_RESPONSE_TYPE: {
+    type: 'INVALID_RESPONSE_TYPE',
+    message: 'Invalid response type',
+    code: 500,
+  },
+  FORBIDDEN: {
+    type: 'FORBIDDEN',
+    message: 'Forbidden',
+    code: 403,
+  },
+  BAD_REQUEST: {
+    type: 'BAD_REQUEST',
+    message: 'Bad Request',
+    code: 400,
+  },
+  NOT_FOUND: {
+    type: 'NOT_FOUND',
+    message: 'Not Found',
+    code: 404,
+  },
+  RATE_LIMIT_EXCEEDED: {
+    type: 'RATE_LIMIT_EXCEEDED',
+    message: 'Rate limit exceeded',
+    code: 429,
+  },
+};
 
-/**
- * Invalid request body
- *
- * @class InvalidRequestBodyError
- * @extends {Error}
- */
-export class InvalidRequestBodyError extends MoleculerError {
-  /**
-   * Creates an instance of InvalidRequestBodyError.
-   *
-   * @param {any} body
-   * @param {any} error
-   *
-   * @memberOf InvalidRequestBodyError
-   */
-  constructor(body: any, error: any) {
-    super('Invalid request body', 400, 'INVALID_REQUEST_BODY', {
-      body,
-      error,
-    });
+export class AppError extends BaseError {
+  constructor(message: string, code: number, type: string) {
+    super(message, code, type);
+    this.name = 'AppError';
   }
-}
 
-/**
- * Invalid response type
- *
- * @class InvalidResponseTypeError
- * @extends {Error}
- */
-export class InvalidResponseTypeError extends MoleculerError {
-  /**
-   * Creates an instance of InvalidResponseTypeError.
-   *
-   * @param {String} dataType
-   *
-   * @memberOf InvalidResponseTypeError
-   */
-  constructor(dataType: string) {
-    super(`Invalid response type '${dataType}'`, 500, 'INVALID_RESPONSE_TYPE', {
-      dataType,
-    });
+  public static invalidRequest(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.INVALID_REQUEST, message);
   }
-}
 
-/**
- * Unauthorized HTTP error
- *
- * @class UnAuthorizedError
- * @extends {Error}
- */
-export class UnAuthorizedError extends MoleculerError {
-  /**
-   * Creates an instance of UnAuthorizedError.
-   *
-   * @param {String} type
-   * @param {any} data
-   *
-   * @memberOf UnAuthorizedError
-   */
-  constructor(type: string, data: any) {
-    super('Unauthorized', 401, type || ERR_INVALID_TOKEN, data);
+  public static invalidRequestError(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.INVALID_REQUEST_BODY, message);
   }
-}
 
-/**
- * Forbidden HTTP error
- *
- * @class ForbiddenError
- * @extends {Error}
- */
-export class ForbiddenError extends MoleculerError {
-  /**
-   * Creates an instance of ForbiddenError.
-   *
-   * @param {String} message
-   * @param {any} data
-   *
-   * @memberOf ForbiddenError
-   */
-  constructor(message: string, data: any) {
-    super(message, 403, 'Forbidden', data);
+  public static invalidResponseType(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.INVALID_RESPONSE_TYPE, message);
   }
-}
 
-/**
- * Bad request HTTP error
- *
- * @class BadRequestError
- * @extends {Error}
- */
-export class BadRequestError extends MoleculerError {
-  /**
-   * Creates an instance of BadRequestError.
-   *
-   * @param {String} message
-   * @param {any} data
-   *
-   * @memberOf BadRequestError
-   */
-  constructor(message: string, data: any) {
-    super(message, 400, 'Bad request', data);
+  public static forbidden(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.FORBIDDEN, message);
   }
-}
 
-/**
- * Not found HTTP error
- *
- * @class NotFoundError
- * @extends {Error}
- */
-export class NotFoundError extends MoleculerError {
-  /**
-   * Creates an instance of NotFoundError.
-   *
-   * @param {String} type
-   * @param {any} data
-   *
-   * @memberOf NotFoundError
-   */
-  constructor(type: string, data: any) {
-    super('Not found', 404, type || 'NOT_FOUND', data);
+  public static badRequest(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.BAD_REQUEST, message);
   }
-}
 
-/**
- * Rate limit exceeded HTTP error
- *
- * @class RateLimitExceeded
- * @extends {Error}
- */
-export class RateLimitExceeded extends MoleculerClientError {
-  /**
-   * Creates an instance of RateLimitExceeded.
-   *
-   * @param {String} type
-   * @param {any} data
-   *
-   * @memberOf RateLimitExceeded
-   */
-  constructor(type: string, data: any) {
-    super('Rate limit exceeded', 429, type, data);
+  public static notFound(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.NOT_FOUND, message);
   }
-}
 
-export class DatabaseError extends MoleculerClientError {
-  constructor(err: Error) {
-    // TODO: Handle Error
-    super(err.message, 400, 'BAD REQUEST', err);
-  }
-}
-
-/**
- * Balance not enough
- *
- * @class NoBalanceError
- * @extends {Error}
- */
-export class NoBalanceError extends MoleculerError {
-  /**
-   * Creates an instance of NoBalanceError.
-   *
-   * @param {String} type
-   * @param {any} data
-   *
-   * @memberOf NotFoundError
-   */
-  constructor(type: string, data: any) {
-    super('Balance is not enough', 402, type || 'NO_BALANCE', data);
+  public static rateLimitExceeded(message: ErrorMessage): AppError {
+    return this.createError(AppErrorMap.RATE_LIMIT_EXCEEDED, message);
   }
 }

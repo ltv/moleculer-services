@@ -15,4 +15,6 @@ export class Role extends BaseWithCreatorAndTimestamp {
   name: string;
   @prop()
   permissions: string[];
+  @prop()
+  inherits?: string[]; // inherited from roles
 }

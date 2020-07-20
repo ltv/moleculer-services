@@ -1,21 +1,16 @@
 import { CacheCleaner } from '@app/core/mixins/cache.cleaner.mixin';
 import { MongooseMixin, MongooseServiceSchema } from '@app/core/mixins/mongoose.mixin';
-import { BaseService, ServiceMetadata } from '@app/types';
-import { AuthorizeMixin } from 'mixins/authorize.mixin';
+import { AuthSpecialRole, BaseService, ServiceMetadata } from '@app/types';
+import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
-import { Context, Errors } from 'moleculer';
+import { Context } from 'moleculer';
 import { Action, Service } from 'moleculer-decorators';
-import {
-  ERR_USER_ALREADY_DISABLED,
-  ERR_USER_ALREADY_ENABLED,
-  ROLE_ADMIN,
-  SERVICE_USERS
-} from 'utils/constants';
-
-const { MoleculerClientError } = Errors;
+import { SERVICE_USERS } from 'utils/constants';
 
 interface UserService extends BaseService, MongooseServiceSchema<User> {}
+
+const { ADMIN_USER, ADMIN_PASSWORD, ADMIN_EMAIL } = process.env;
 
 @Service({
   name: SERVICE_USERS,
@@ -23,13 +18,7 @@ interface UserService extends BaseService, MongooseServiceSchema<User> {}
   mixins: [
     MongooseMixin(User),
     CacheCleaner(['cache.clean.users']),
-    ConfigMixin(['site.**', 'users.**']),
-    AuthorizeMixin({
-      list: [ROLE_ADMIN],
-      get: [ROLE_ADMIN],
-      create: [ROLE_ADMIN],
-      delete: [ROLE_ADMIN]
-    })
+    ConfigMixin(['site.**', 'users.**'])
   ],
   settings: {
     rest: true,
@@ -120,7 +109,7 @@ class UserService extends BaseService implements UserService {
       verificationToken: ctx.params.token
     });
     if (!user) {
-      throw new MoleculerClientError('Invalid verification token!', 400, 'INVALID_TOKEN');
+      return AuthError.invalidToken().reject();
     }
 
     const updatedUser = await this.adapter.updateById(user._id, {
@@ -149,11 +138,7 @@ class UserService extends BaseService implements UserService {
   async disable(ctx: Context) {
     const user = (ctx as any).locals.entity;
     if (user.status === 0) {
-      throw new MoleculerClientError(
-        'Account has already been disabled!',
-        400,
-        ERR_USER_ALREADY_DISABLED
-      );
+      return AuthError.userIsNotActive().reject();
     }
 
     const res = await this.adapter.updateById(user._id, { $set: { status: 0 } });
@@ -172,21 +157,8 @@ class UserService extends BaseService implements UserService {
   })
   async enable(ctx: Context) {
     const user = (ctx as any).locals.entity;
-    if (user.status === 1) {
-      throw new MoleculerClientError(
-        'Account has already been enabled!',
-        400,
-        ERR_USER_ALREADY_ENABLED
-      );
-    }
-    const res = await this.adapter.updateById(user._id, {
-      $set: {
-        status: 1
-      }
-    });
-    return {
-      status: res.status
-    };
+    const res = await this.adapter.updateById(user._id, { $set: { status: 1 } });
+    return { status: res.status };
   }
 
   /**
@@ -202,9 +174,9 @@ class UserService extends BaseService implements UserService {
       email: 'string'
     }
   })
-  async getUserByEmail(ctx: Context<{ email: string }>) {
+  getUserByEmail(ctx: Context<{ email: string }>) {
     const { email } = ctx.params;
-    return await this.adapter.findOne({ email });
+    return this.adapter.findOne({ email });
   }
 
   /**
@@ -220,9 +192,9 @@ class UserService extends BaseService implements UserService {
       username: 'string'
     }
   })
-  async getUserByUsername(ctx: Context<{ username: string }>) {
+  getUserByUsername(ctx: Context<{ username: string }>) {
     const { username } = ctx.params;
-    return await this.adapter.findOne({ username });
+    return this.adapter.findOne({ username });
   }
 
   /**
@@ -243,23 +215,26 @@ class UserService extends BaseService implements UserService {
   }
   // ACTIONS (E)
   async started() {
-    const count = await this.adapter.findOne({
-      email: 'admin@ltv.vn'
-    });
+    const email = ADMIN_EMAIL || 'admin@ltv.dev';
+    const username = ADMIN_USER || 'admin';
+    const firstName = username;
+    const password = ADMIN_PASSWORD || 'admin123';
+    const count = await this.adapter.findOne({ email });
     if (!count) {
       const AdminInfo = {
         status: 1,
         passwordless: false,
         verified: true,
-        email: 'admin@ltv.vn',
-        firstName: 'admin',
-        lastName: 'mr',
-        role: 'admin',
+        email,
+        username,
+        firstName,
+        lastName: '',
+        role: AuthSpecialRole.SYSTEM,
         avatar: 'https://gravatar.com/avatar/16b58c10a2451f52af3bc45a36ab7b8d?s=64&d=robohash',
-        password: '$2b$10$BoCaLdlx28JSneND4.6iceKPwUkDVtAprxYmp5oOGzES1x0Xw2qYe'
+        password
       };
       this.adapter.insert(AdminInfo);
-      this.logger.info('Account Admin was inserted!');
+      this.logger.info(`Account ${username} was inserted!`);
     }
   }
 }

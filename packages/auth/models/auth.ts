@@ -5,11 +5,6 @@ import { hashPassword } from './plugins/hashPassword';
 
 const mongooseHidden = require('mongoose-hidden')();
 
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user'
-}
-
 export class TwoFactorAuth {
   @prop()
   enabled?: boolean;
@@ -59,12 +54,11 @@ export class User extends BaseWithCreatorAndTimestamp {
   passwordlessTokenExpires?: number;
 
   @prop({
-    enum: UserRole,
     type: String,
     required: true,
     readonly: true
   })
-  role: UserRole;
+  role: string;
 
   @prop({ type: ObjectId })
   addressId?: ObjectId | string;

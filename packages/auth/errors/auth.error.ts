@@ -1,16 +1,6 @@
-import { Errors } from 'moleculer';
+import { BaseError, ErrorMessage, IError } from '@app/core/errors';
 
-const { MoleculerClientError } = Errors;
-
-export interface AuthErrorType {
-  type?: string;
-  message?: string;
-  code?: number;
-}
-
-export type AuthErrorMessage = string | AuthErrorType;
-
-const AuthErrorMap: { [key: string]: AuthErrorType } = {
+const AuthErrorMap: { [key: string]: IError } = {
   USER_ALREADY_LOGGED_IN: {
     type: 'USER_ALREADY_LOGGED_IN',
     message: 'User or password is invalid'
@@ -81,94 +71,89 @@ const AuthErrorMap: { [key: string]: AuthErrorType } = {
     type: 'EXPIRED_TOKEN',
     message: 'Token has expired.',
     code: 401
+  },
+  NO_PERMISSION: {
+    type: 'NO_PERMISSION',
+    message: 'You have no permissions to perform this action.',
+    code: 403
   }
 };
 
-export class AuthError extends MoleculerClientError {
+export class AuthError extends BaseError {
   constructor(message: string, code: number, type: string) {
     super(message, code, type);
     this.name = 'AuthError';
   }
 
-  public reject() {
-    return Promise.reject(this);
-  }
-
-  public static createError(error: AuthErrorType, msg?: AuthErrorMessage) {
-    if (typeof msg === 'object') {
-      error = Object.assign(error, msg);
-    } else if (typeof msg === 'string') {
-      error.message = msg;
-    }
-    const { type, message, code } = error;
-    return new AuthError(message, code || 400, type);
-  }
-
-  public static loggedIn(message: string): AuthError {
+  public static loggedIn(message: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USER_ALREADY_LOGGED_IN, message);
   }
 
-  public static authenticationFailed(message?: AuthErrorMessage): AuthError {
+  public static authenticationFailed(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.AUTHENTICATION_FAILED, message);
   }
 
-  public static userIsNotActive(message?: AuthErrorMessage): AuthError {
+  public static userIsNotActive(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USER_IS_NOT_ACTIVE, message);
   }
 
-  public static userIsNotVerified(message?: AuthErrorMessage): AuthError {
+  public static userIsNotVerified(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USER_IS_NOT_VERIFIED, message);
   }
 
-  public static passwordLessOnly(message?: AuthErrorMessage): AuthError {
+  public static passwordLessOnly(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.PASSWORD_LESS_ONLY, message);
   }
 
-  public static passwordLessNotAvailable(message?: AuthErrorMessage): AuthError {
+  public static passwordLessNotAvailable(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.PASSWORD_LESS_NOT_AVAILABLE, message);
   }
 
-  public static passwordLessNotAllowed(message?: AuthErrorMessage): AuthError {
+  public static passwordLessNotAllowed(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.PASSWORD_LESS_NOT_ALLOWED, message);
   }
 
-  public static missing2FACode(message?: AuthErrorMessage): AuthError {
+  public static missing2FACode(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.MISSING_2FA_CODE, message);
   }
 
-  public static invalid2FACode(message?: AuthErrorMessage): AuthError {
+  public static invalid2FACode(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.INVALID_2FA_TOKEN, message);
   }
 
-  public static signUpNotAvailable(message?: AuthErrorMessage): AuthError {
+  public static signUpNotAvailable(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.SIGNUP_IS_NOT_AVAILABLE, message);
   }
 
-  public static emailAlreadyExists(message?: AuthErrorMessage): AuthError {
+  public static emailAlreadyExists(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.EMAIL_ALREADY_EXISTS, message);
   }
 
-  public static usernameAlreadyExists(message?: AuthErrorMessage): AuthError {
+  public static usernameAlreadyExists(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USERNAME_ALREADY_EXISTS, message);
   }
 
-  public static usernameCantEmpty(message?: AuthErrorMessage): AuthError {
+  public static usernameCantEmpty(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USERNAME_CANT_EMPTY, message);
   }
 
-  public static passwordCantEmpty(message?: AuthErrorMessage): AuthError {
+  public static passwordCantEmpty(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.PASSWORD_CANT_EMPTY, message);
   }
 
-  public static userIsNotRegistered(message?: AuthErrorMessage): AuthError {
+  public static userIsNotRegistered(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.USER_IS_NOT_REGISTERED, message);
   }
 
-  public static invalidToken(message?: AuthErrorMessage): AuthError {
+  public static invalidToken(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.INVALID_TOKEN, message);
   }
 
-  public static tokenHasExpired(message?: AuthErrorMessage): AuthError {
+  public static tokenHasExpired(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.EXPIRED_TOKEN, message);
+  }
+
+  public static noPermission(message?: ErrorMessage): AuthError {
+    return this.createError(AuthErrorMap.NO_PERMISSION, message);
   }
 }

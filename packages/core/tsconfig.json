@@ -13,14 +13,7 @@
     "sourceMap": false,
     "outDir": "./dist",
     "baseUrl": "./",
-    "paths": {
-      "core/*": ["core/*"],
-      "models/*": ["models/*"],
-      "utils/*": ["utils/*"],
-      "mixins/*": ["mixins/*"],
-      "services/*": ["services/*"],
-      "tests/*": ["tests/*"]
-    },
+    "paths": {},
     "typeRoots": ["node_modules/@types", "@types"],
     "lib": [
       "es5",

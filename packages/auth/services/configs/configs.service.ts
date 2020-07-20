@@ -1,13 +1,13 @@
 import { CacheCleaner } from '@app/core/mixins/cache.cleaner.mixin';
 import { MongooseMixin } from '@app/core/mixins/mongoose.mixin';
-import { BaseService, Context } from '@app/types';
+import { AuthSpecialRole, BaseService, Context } from '@app/types';
 import flattenDeep from 'lodash.flattendeep';
 import isEqual from 'lodash.isequal';
 import uniqBy from 'lodash.uniqby';
 import { Config } from 'models';
 import { Errors } from 'moleculer';
 import { Action, Method, Service } from 'moleculer-decorators';
-import { ROLE_USER, SERVICE_CONFIGS } from 'utils/constants';
+import { SERVICE_CONFIGS } from 'utils/constants';
 
 const { ValidationError } = Errors;
 
@@ -27,8 +27,7 @@ const { match } = require('moleculer').Utils;
       'users.username.enabled': false,
       'users.passwordless.enabled': false,
       'users.verification.enabled': false,
-      'users.defaultRole': ROLE_USER,
-      'users.defaultPlan': 'free',
+      'users.defaultRole': AuthSpecialRole.EVERYONE,
       'users.jwt.expiresIn': '30m',
       'users.two-factor.enabled': true
     }

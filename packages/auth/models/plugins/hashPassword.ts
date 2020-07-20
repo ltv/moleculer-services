@@ -1,5 +1,5 @@
 import { User } from 'models';
-import { genSalt, hashPass } from '../../helpers/password';
+import { genSalt, hashPass } from 'utils/password';
 import { DocumentType } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 

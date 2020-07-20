@@ -1,4 +1,8 @@
-import moleculer, { Service } from 'moleculer';
+import moleculer, {
+  Service,
+  ActionSchema as MoleculerActionSchema,
+  GenericObject,
+} from 'moleculer';
 
 export type ServiceMetadata = {
   tenantId?: string;
@@ -19,7 +23,17 @@ export type UploadServiceMetadata = ServiceMetadata & File;
 export class Context<T = unknown> extends moleculer.Context<
   T,
   ServiceMetadata
-> {}
+> {
+  public locals: GenericObject = {};
+}
+
+export type CustomPermissionFunc = (ctx: Context) => Promise<boolean>;
+export type ActionPermission = string | CustomPermissionFunc;
+
+export class ActionSchema implements MoleculerActionSchema {
+  permissions?: ActionPermission[];
+  needEntity?: boolean;
+}
 
 export interface GraphQLInput<T> {
   input: {
@@ -76,4 +90,17 @@ export class BaseService extends Service {
   encodeHex: (entityId: number) => string;
 
   decodeHex: (code: string) => number;
+
+  memoize: (
+    key: string,
+    params: any,
+    callback: () => Promise<any>
+  ) => Promise<any>;
+}
+
+export enum AuthSpecialRole {
+  SYSTEM = '$system',
+  EVERYONE = '$everyone',
+  AUTHENTICATED = '$authenticated',
+  OWNER = '$owner',
 }

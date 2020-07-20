@@ -1,9 +1,9 @@
 import { MongooseMixin } from '@app/core/mixins/mongoose.mixin';
 import { BaseService, Context } from '@app/types';
-import { sha512 } from 'helpers/password';
 import { Token } from 'models';
-import { Service, Action } from 'moleculer-decorators';
+import { Action, Service } from 'moleculer-decorators';
 import { SERVICE_TOKEN } from 'utils/constants';
+import { sha512 } from 'utils/password';
 
 @Service({
   name: SERVICE_TOKEN,
@@ -27,6 +27,7 @@ class AuthToken extends BaseService {
   }
   /** HOOKS (E) **/
 
+  /** Actions (S) */
   @Action({
     name: 'findToken',
     params: {
@@ -38,6 +39,7 @@ class AuthToken extends BaseService {
     const { userId, token } = ctx.params;
     return this.adapter.findOne({ userId, token });
   }
+  /** Actions (E) */
 }
 
 export = AuthToken;

@@ -1,14 +1,12 @@
-import ApiService from 'moleculer-web';
-import helmet from 'helmet';
-import bodyParser from 'body-parser';
-import { ServiceSchema } from 'moleculer';
-
-import { enhanceResJson } from '@app/core/utils/json';
 import { I18NextMixin } from '@app/core/mixins/i18next.mixin';
+import { enhanceResJson } from '@app/core/utils/json';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import { ServiceSchema } from 'moleculer';
+import ApiService from 'moleculer-web';
 import { SERVICE_GATEWAY } from 'utils/constants';
-
-import { authenticate } from './utils';
 import { routes } from './routes';
+import { authenticate } from './utils';
 
 const ApiGateway: ServiceSchema = {
   name: SERVICE_GATEWAY,

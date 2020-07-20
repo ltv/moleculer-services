@@ -25,7 +25,11 @@
   },
   "scripts": {
     "ci": "git-cz",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "serve:docs": "yarn workspace @app/docs run serve",
+    "serve:auth": "yarn workspace @app/auth run serve",
+    "build:docs:image": "docker build --file packages/docs/Dockerfile packages --tag ms-docs",
+    "build:auth:image": "docker build --file packages/auth/Dockerfile . --tag ms-auth"
   },
   "devDependencies": {
     "git-cz": "^4.3.1"

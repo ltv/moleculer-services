@@ -1,8 +1,8 @@
-import { Context } from '@app/types';
+import { AuthSpecialRole, Context } from '@app/types';
 import { AuthError } from 'errors';
 import pick from 'lodash.pick';
 import { User } from 'models';
-import { ROLE_EVERYONE, SERVICE_AUTH } from 'utils/constants';
+import { SERVICE_AUTH } from 'utils/constants';
 
 interface ClientRequest {
   originalUrl: string;
@@ -26,7 +26,7 @@ export async function authenticate(ctx: Context, _: any, req: ClientRequest) {
     if (auth && auth.startsWith('Bearer ')) token = auth.slice(7);
   }
 
-  ctx.meta.roles = [ROLE_EVERYONE];
+  ctx.meta.roles = [AuthSpecialRole.EVERYONE];
 
   let user!: User;
 
