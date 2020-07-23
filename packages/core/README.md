@@ -2,20 +2,20 @@
 
 ## Dependencies
 
-| name      | version | description | requires install |
-| --------- | ------- | ----------- | ---------------- |
-| moleculer | 0.14.8  | moleculer   | YES              |
+| name | version | description | requires install |
+| :--- | :--- | :--- | :--- |
+| moleculer | 0.14.8 | moleculer | YES |
 
 ## Modules
 
 ### errors
 
-- BaseError
-- AppError
+* BaseError
+* AppError
 
 #### Usage
 
-```ts
+```typescript
 import { BaseError, AppError } from '@app/core';
 
 return AppError.invalidRequest().reject();
@@ -23,17 +23,17 @@ return AppError.invalidRequest().reject();
 
 #### Built-in Errors
 
-- invalidRequest
-- invalidRequestError
-- invalidResponseType
-- forbidden
-- badRequest
-- notFound
-- rateLimitExceeded
+* invalidRequest
+* invalidRequestError
+* invalidResponseType
+* forbidden
+* badRequest
+* notFound
+* rateLimitExceeded
 
 #### Extends Error
 
-```ts
+```typescript
 import { BaseError, IError } from '@app/core';
 
 const DbErrorMap: { [key: string]: IError } = {
@@ -59,12 +59,11 @@ export class DatabaseError extends BaseError {
 
 #### check-permissions
 
-> Used for checking permissions of each action
-> Ex: `permissions: ['post.create']`
+> Used for checking permissions of each action Ex: `permissions: ['post.create']`
 
-- Apply middlewares in `moleculer.config.(ts|js)`
+* Apply middlewares in `moleculer.config.(ts|js)`
 
-```ts
+```typescript
 import { CheckPermissionsMiddleware } from '@app/core';
 
 const brokerConfig: BrokerOptions = {
@@ -78,7 +77,7 @@ const brokerConfig: BrokerOptions = {
 export = brokerConfig;
 ```
 
-- Use in actions
+* Use in actions
 
 ```javascript
 module.exports = {
@@ -96,9 +95,9 @@ module.exports = {
 
 > Used for pre-fetch entity by `id`
 
-- Apply middlewares in `moleculer.config.(ts|js)`
+* Apply middlewares in `moleculer.config.(ts|js)`
 
-```ts
+```typescript
 import { FindEntityMiddleware } from '@app/core';
 
 const brokerConfig: BrokerOptions = {
@@ -111,7 +110,7 @@ const brokerConfig: BrokerOptions = {
 export = brokerConfig;
 ```
 
-- Use in actions
+* Use in actions
 
 ```javascript
 module.exports = {
@@ -138,9 +137,9 @@ module.exports = {
 
 > Used for checking heath of service
 
-- Apply middlewares in `moleculer.config.(ts|js)`
+* Apply middlewares in `moleculer.config.(ts|js)`
 
-```ts
+```typescript
 import { CreateHealthCheckMiddleware } from '@app/core';
 
 const {
@@ -175,3 +174,4 @@ export = brokerConfig;
 ### utils
 
 > // TODO: Update later
+
