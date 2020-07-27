@@ -3,7 +3,7 @@
 ## Dependencies
 
 | name      | version | description | requires install |
-| --------- | ------- | ----------- | ---------------- |
+| :-------- | :------ | :---------- | :--------------- |
 | moleculer | 0.14.8  | moleculer   | YES              |
 
 ## Modules
@@ -59,8 +59,7 @@ export class DatabaseError extends BaseError {
 
 #### check-permissions
 
-> Used for checking permissions of each action
-> Ex: `permissions: ['post.create']`
+> Used for checking permissions of each action Ex: `permissions: ['post.create']`
 
 - Apply middlewares in `moleculer.config.(ts|js)`
 
