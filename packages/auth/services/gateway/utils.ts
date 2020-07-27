@@ -1,4 +1,4 @@
-import { AuthSpecialRole, Context } from '@app/types';
+import { AuthSpecialRole, Context } from '@ltv/types';
 import { AuthError } from 'errors';
 import pick from 'lodash.pick';
 import { User } from 'models';

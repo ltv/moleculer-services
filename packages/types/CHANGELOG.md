@@ -5,4 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 0.2.0 (2020-07-20)
 
-**Note:** Version bump only for package @app/types
+**Note:** Version bump only for package @ltv/types

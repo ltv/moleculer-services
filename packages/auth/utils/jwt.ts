@@ -17,7 +17,7 @@ function readKeyContent(keyPath: string) {
  * @param payload { [key: string]: string }
  * @param expiredIn expressed in seconds or a string describing a time span zeit/ms.
  */
-export function generateToken(
+export function signJWTToken(
   payload: { [key: string]: string },
   expiresIn: string,
   options?: SignOptions

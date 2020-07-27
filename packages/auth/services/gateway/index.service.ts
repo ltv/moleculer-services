@@ -1,5 +1,5 @@
-import { I18NextMixin } from '@app/core/mixins/i18next.mixin';
-import { enhanceResJson } from '@app/core/utils/json';
+import { I18NextMixin } from '@ltv/core/mixins/i18next.mixin';
+import { enhanceResJson } from '@ltv/core/utils/json';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import { ServiceSchema } from 'moleculer';

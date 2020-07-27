@@ -1,4 +1,4 @@
-import { BaseError, ErrorMessage, IError } from '@app/core/errors';
+import { BaseError, ErrorMessage, IError } from '@ltv/core/errors';
 
 const AuthErrorMap: { [key: string]: IError } = {
   USER_ALREADY_LOGGED_IN: {
@@ -75,6 +75,12 @@ const AuthErrorMap: { [key: string]: IError } = {
   NO_PERMISSION: {
     type: 'NO_PERMISSION',
     message: 'You have no permissions to perform this action.',
+    code: 403
+  },
+  ACCOUNT_HAS_BEEN_HACKED: {
+    type: 'ACCOUNT_HAS_BEEN_HACKED',
+    message:
+      'Someone has been used your account. We already logged out all your sessions, please login again and change your password.',
     code: 403
   }
 };
@@ -155,5 +161,9 @@ export class AuthError extends BaseError {
 
   public static noPermission(message?: ErrorMessage): AuthError {
     return this.createError(AuthErrorMap.NO_PERMISSION, message);
+  }
+
+  public static accountHasBeenHacked(message?: ErrorMessage): AuthError {
+    return this.createError(AuthErrorMap.ACCOUNT_HAS_BEEN_HACKED, message);
   }
 }

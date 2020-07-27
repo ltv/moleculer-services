@@ -4,7 +4,7 @@ import {
   AuthSpecialRole,
   Context,
   CustomPermissionFunc,
-} from '@app/types';
+} from '@ltv/types';
 import { AppError } from '../errors';
 import isFunction from 'lodash.isfunction';
 import isString from 'lodash.isstring';

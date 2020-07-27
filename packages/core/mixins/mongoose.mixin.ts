@@ -1,5 +1,5 @@
 const DbService = require('moleculer-db');
-import { ClassType } from '@app/types';
+import { ClassType } from '@ltv/types';
 import { buildSchema, DocumentType } from '@typegoose/typegoose';
 import isFunction from 'lodash.isfunction';
 import {
@@ -90,7 +90,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
   const adapter = TESTING
     ? new DbService.MemoryAdapter()
     : new MongooseAdapterExtended(
-        process.env.MONGO_URI || 'mongodb://localhost/moleculer-auth',
+        process.env.MONGO_URI || 'mongodb://localhost/moleculer-services',
         {
           autoIndex: !TESTING,
           user,

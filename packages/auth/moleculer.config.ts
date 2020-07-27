@@ -1,8 +1,14 @@
-import { CreateHealthCheckMiddleware, FindEntityMiddleware } from '@app/core/middlewares';
+import { CreateHealthCheckMiddleware, FindEntityMiddleware } from '@ltv/core/middlewares';
 import { BrokerOptions, Errors, LoggerConfig, TracerOptions } from 'moleculer';
 import os from 'os';
+import { inspect } from 'util';
 
-const nodeIDPrefix = process.env.NODE_ID || '';
+const nodeIDPrefix = ((nodeID: string) => {
+  if (!nodeID) {
+    return '';
+  }
+  return `-${nodeID}`;
+})(process.env.NODE_ID);
 const osHostName = os.hostname().toLowerCase();
 
 // HeathCheck (S)
@@ -127,14 +133,18 @@ const { LOGGER_TYPE, LOGGER_LEVEL } = process.env;
 const logger: LoggerConfig = {
   type: LOGGER_TYPE || 'Console',
   options: {
-    level: LOGGER_LEVEL || 'info'
+    level: LOGGER_LEVEL || 'info',
+    moduleColors: true
+    //autoPadding: true
+    // formatter: 'short',
+    // objectPrinter: (o: any) => inspect(o, { depth: 4, colors: true, breakLength: 100 })
   }
 };
 // LOGGER (E)
 
 const brokerConfig: BrokerOptions = {
-  namespace: '',
-  nodeID: `${nodeIDPrefix}-${osHostName}`,
+  namespace: process.env.NAMESPACE || '',
+  nodeID: `${osHostName}${nodeIDPrefix}`,
 
   logFormatter: 'full',
   logger,

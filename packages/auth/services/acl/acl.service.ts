@@ -1,5 +1,5 @@
-import { MemoizeMixin } from '@app/core/mixins';
-import { BaseService, Context } from '@app/types';
+import { MemoizeMixin } from '@ltv/core/mixins';
+import { BaseService, Context } from '@ltv/types';
 import compact from 'lodash.compact';
 import flattenDeep from 'lodash.flattendeep';
 import uniq from 'lodash.uniq';

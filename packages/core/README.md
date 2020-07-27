@@ -16,7 +16,7 @@
 #### Usage
 
 ```ts
-import { BaseError, AppError } from '@app/core';
+import { BaseError, AppError } from '@ltv/core';
 
 return AppError.invalidRequest().reject();
 ```
@@ -34,7 +34,7 @@ return AppError.invalidRequest().reject();
 #### Extends Error
 
 ```ts
-import { BaseError, IError } from '@app/core';
+import { BaseError, IError } from '@ltv/core';
 
 const DbErrorMap: { [key: string]: IError } = {
   NOT_FOUND_ENTITY: {
@@ -65,7 +65,7 @@ export class DatabaseError extends BaseError {
 - Apply middlewares in `moleculer.config.(ts|js)`
 
 ```ts
-import { CheckPermissionsMiddleware } from '@app/core';
+import { CheckPermissionsMiddleware } from '@ltv/core';
 
 const brokerConfig: BrokerOptions = {
   // ...
@@ -99,7 +99,7 @@ module.exports = {
 - Apply middlewares in `moleculer.config.(ts|js)`
 
 ```ts
-import { FindEntityMiddleware } from '@app/core';
+import { FindEntityMiddleware } from '@ltv/core';
 
 const brokerConfig: BrokerOptions = {
   // ...
@@ -141,7 +141,7 @@ module.exports = {
 - Apply middlewares in `moleculer.config.(ts|js)`
 
 ```ts
-import { CreateHealthCheckMiddleware } from '@app/core';
+import { CreateHealthCheckMiddleware } from '@ltv/core';
 
 const {
   HEALTH_CHECK_READINESS_PATH,

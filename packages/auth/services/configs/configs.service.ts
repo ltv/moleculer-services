@@ -1,6 +1,6 @@
-import { CacheCleaner } from '@app/core/mixins/cache.cleaner.mixin';
-import { MongooseMixin } from '@app/core/mixins/mongoose.mixin';
-import { AuthSpecialRole, BaseService, Context } from '@app/types';
+import { CacheCleaner } from '@ltv/core/mixins/cache.cleaner.mixin';
+import { MongooseMixin } from '@ltv/core/mixins/mongoose.mixin';
+import { AuthSpecialRole, BaseService, Context } from '@ltv/types';
 import flattenDeep from 'lodash.flattendeep';
 import isEqual from 'lodash.isequal';
 import uniqBy from 'lodash.uniqby';
@@ -23,13 +23,13 @@ const { match } = require('moleculer').Utils;
       'mail.enabled': false,
       'mail.from': 'no-reply@ltv.vn',
 
-      'users.signup.enabled': true,
-      'users.username.enabled': false,
-      'users.passwordless.enabled': false,
-      'users.verification.enabled': false,
-      'users.defaultRole': AuthSpecialRole.EVERYONE,
-      'users.jwt.expiresIn': '30m',
-      'users.two-factor.enabled': true
+      'user.signup.enabled': process.env.USER_SIGNUP_ENABLED || true,
+      'user.username.enabled': process.env.USER_USERNAME_ENABLED || false,
+      'user.passwordless.enabled': process.env.USER_PASSWORDLESS_ENABLED || false,
+      'user.verification.enabled': process.env.USER_VERIFICATION_ENABLED || false,
+      'user.defaultRole': AuthSpecialRole.EVERYONE,
+      'user.jwt.expiresIn': process.env.USER_JWT_EXPIRESIN || '30m',
+      'user.two-factor.enabled': process.env.USER_TWO_FACTOR_ENABLED || false
     }
   }
 })

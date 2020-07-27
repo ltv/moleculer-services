@@ -10,6 +10,7 @@ export type ServiceMetadata = {
   roles: string[];
   token: string;
   user: any;
+  clientIp?: string;
   $fileInfo: File;
   $statusCode?: number;
   $statusMessage?: string;
@@ -75,6 +76,7 @@ export interface UploadResponse {
 export type ClassType<T> = new (...args: any) => T;
 
 export class BaseService extends Service {
+  protected configs: GenericObject;
   clean: () => void;
 
   entityChanged: (type: string, json: any, ctx: Context) => Promise<any>;

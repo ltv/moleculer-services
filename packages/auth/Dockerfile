@@ -25,7 +25,7 @@ RUN yarn --pure-lockfile
 ADD packages/auth packages/auth
 
 # Build
-RUN yarn workspace @app/auth build --node-args='--stack_size=6144 --max-old-space-size=6144' --mode production
+RUN yarn workspace @ltv/auth build --node-args='--stack_size=6144 --max-old-space-size=6144' --mode production
 
 # ===== Builder02 =====
 # =====================
@@ -38,8 +38,8 @@ RUN apk --no-cache add \
 
 WORKDIR /builder02/
 COPY --from=builder /builder/packages/auth/dist/ .
-RUN sed -ie '/@app\/core/d' ./package.json
-RUN sed -ie '/@app\/types/d' ./package.json
+RUN sed -ie '/@ltv\/core/d' ./package.json
+RUN sed -ie '/@ltv\/types/d' ./package.json
 ADD yarn.lock                         .
 RUN yarn install --pure-lockfile --production=true
 

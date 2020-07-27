@@ -1,5 +1,5 @@
 import { ActionHandler, Middleware } from 'moleculer';
-import { ActionSchema, Context } from '@app/types';
+import { ActionSchema, Context } from '@ltv/types';
 import { DatabaseError } from '../errors';
 
 export function FindEntityMiddleware(): Middleware {

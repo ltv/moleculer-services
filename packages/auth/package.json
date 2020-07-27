@@ -1,5 +1,5 @@
 {
-  "name": "@app/auth",
+  "name": "@ltv/auth",
   "version": "0.2.0",
   "description": "LTV moleculer auth service",
   "main": "index.js",
@@ -9,9 +9,9 @@
   "scripts": {
     "serve": "export NODE_PATH=./ && node -r ts-node/register node_modules/.bin/moleculer-runner --hot --repl --envfile=.env.development services --mask **/*.service.ts --config moleculer.config.ts",
     "start:prod": "moleculer-runner --env --mask **/*.service.js --config moleculer.config.js",
-    "test:unit": "jest --coverage",
+    "test:unit": "jest --coverage --forceExit",
     "build": "rimraf dist/* && webpack --node-args='--stack_size=6144 --max-old-space-size=6144' --progress --colors",
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "dependencies": {
     "@typegoose/typegoose": "^7.2.0",
@@ -36,11 +36,12 @@
     "moleculer-web": "^0.9.1",
     "mongoose": "^5.9.18",
     "mongoose-hidden": "^1.9.0",
-    "nats": "^1.4.0"
+    "nats": "^1.4.0",
+    "redlock": "^4.1.0"
   },
   "devDependencies": {
-    "@app/core": "^0.2.0",
-    "@app/types": "^0.2.0",
+    "@ltv/core": "^0.2.0",
+    "@ltv/types": "^0.2.0",
     "@types/bcrypt": "^3.0.0",
     "@types/faker": "^4.1.11",
     "@types/helmet": "^0.0.45",
@@ -72,10 +73,18 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^tests/(.*)$": "<rootDir>/tests/$1",
+      "^models/(.*)$": "<rootDir>/models/$1",
       "^utils/(.*)$": "<rootDir>/utils/$1",
       "^mixins/(.*)$": "<rootDir>/mixins/$1",
       "^services/(.*)$": "<rootDir>/services/$1",
-      "^tests/(.*)$": "<rootDir>/tests/$1"
+      "^errors/(.*)$": "<rootDir>/errors/$1",
+      "^tests$": "<rootDir>/tests/index.ts",
+      "^models$": "<rootDir>/models/index.ts",
+      "^utils$": "<rootDir>/utils/index.ts",
+      "^mixins$": "<rootDir>/mixins/index.ts",
+      "^services$": "<rootDir>/services/index.ts",
+      "^errors$": "<rootDir>/errors/index.ts"
     },
     "collectCoverage": true,
     "coverageReporters": [

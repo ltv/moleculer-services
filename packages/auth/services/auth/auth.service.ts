@@ -1,14 +1,13 @@
-import createHashIds from '@app/core/utils/hashids';
-import { BaseService } from '@app/types';
+import createHashIds from '@ltv/core/utils/hashids';
+import { BaseService, Context } from '@ltv/types';
 import crypto from 'crypto';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
-import { Context } from 'moleculer';
 import { Action, Method, Service } from 'moleculer-decorators';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
-import { generateToken as generateJWTToken, verifyJWT } from 'utils/jwt';
+import { signJWTToken, verifyJWT } from 'utils/jwt';
 import { comparePassword, genSalt, hashPass, sha512 } from 'utils/password';
 import { AuthLoginRule } from './validators/index.validator';
 
@@ -39,7 +38,7 @@ type DecodedJWT = JWTToken;
       register: ['notifyRegistered']
     }
   },
-  mixins: [ConfigMixin(['site.**', 'users.**'])]
+  mixins: [ConfigMixin(['mail.**', 'user.**'])]
 })
 class AuthService extends BaseService {
   @Action({
@@ -58,7 +57,7 @@ class AuthService extends BaseService {
   })
   async login(ctx: Context<AuthLoginParams>) {
     const query = ((username) => {
-      if (!this.configs['users.username.enabled']) {
+      if (!this.configs['user.username.enabled']) {
         return { email: username };
       }
       return { $or: [{ email: username }, { username }] };
@@ -91,7 +90,7 @@ class AuthService extends BaseService {
       if (!comparePassword(ctx.params.password, user.password)) {
         return AuthError.authenticationFailed().reject();
       }
-    } else if (this.configs['users.passwordless.enabled']) {
+    } else if (this.configs['user.passwordless.enabled']) {
       if (!this.configs['mail.enabled']) {
         return AuthError.passwordLessNotAvailable().reject();
       }
@@ -119,7 +118,7 @@ class AuthService extends BaseService {
     }
 
     const userId = user._id.toString();
-    const token = generateJWTToken({ id: userId }, this.configs['users.jwt.expiresIn']);
+    const token = signJWTToken({ id: userId }, this.configs['user.jwt.expiresIn']);
     return { token, userId };
   }
 
@@ -131,7 +130,7 @@ class AuthService extends BaseService {
     params: RegisterUserRule
   })
   async register(ctx: Context<User>) {
-    if (!this.configs['users.signup.enabled']) {
+    if (!this.configs['user.signup.enabled']) {
       return AuthError.signUpNotAvailable().reject();
     }
 
@@ -147,7 +146,7 @@ class AuthService extends BaseService {
     }
 
     // Verify username
-    if (this.configs['users.username.enabled']) {
+    if (this.configs['user.username.enabled']) {
       if (!username) {
         return AuthError.usernameCantEmpty().reject();
       }
@@ -165,7 +164,7 @@ class AuthService extends BaseService {
     entity.email = email;
     entity.firstName = params.firstName;
     entity.lastName = params.lastName;
-    entity.role = this.configs['users.defaultRole'];
+    entity.role = this.configs['user.defaultRole'];
     entity.avatar = params.avatar;
     // entity.socialLinks = {};
     // entity.createdAt = Date.now();
@@ -183,17 +182,17 @@ class AuthService extends BaseService {
       entity.passwordless = false;
       const pwdSalt: string = genSalt();
       entity.password = hashPass(params.password, pwdSalt);
-    } else if (this.configs['users.passwordless.enabled']) {
+    } else if (this.configs['user.passwordless.enabled']) {
       entity.passwordless = true;
-      entity.password = this.generateToken();
+      entity.password = this.signJWTToken();
     } else {
       return AuthError.passwordCantEmpty().reject();
     }
 
     // Generate verification token
-    if (this.configs['users.verification.enabled']) {
+    if (this.configs['user.verification.enabled']) {
       entity.verified = false;
-      entity.verificationToken = this.generateToken();
+      entity.verificationToken = this.signJWTToken();
     }
 
     // Create new user
@@ -204,6 +203,14 @@ class AuthService extends BaseService {
     }
 
     return user;
+  }
+
+  @Action({
+    name: 'logout'
+  })
+  actLogout(ctx: Context) {
+    this.logger.debug(`User ${ctx.meta.userId} logging out...`);
+    return ctx.call(`v1.${SERVICE_TOKEN}.delete`, { token: ctx.meta.token });
   }
 
   @Action({
@@ -276,7 +283,7 @@ class AuthService extends BaseService {
    * @param {Number} len Token length
    */
   @Method
-  generateToken(len = 25) {
+  signJWTToken(len = 25) {
     return crypto.randomBytes(len).toString('hex');
   }
 

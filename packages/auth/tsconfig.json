@@ -38,5 +38,6 @@
       "esnext.asynciterable"
     ]
   },
-  "exclude": ["**/*.test.ts", "dist/**", "tests/**/*", "**/*.spec.ts"]
+  // "include": ["**/*.spec.ts"],
+  "exclude": ["**/*.test.ts", "dist/**", "tests/**/*"]
 }

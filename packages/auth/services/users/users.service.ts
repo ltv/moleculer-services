@@ -1,6 +1,6 @@
-import { CacheCleaner } from '@app/core/mixins/cache.cleaner.mixin';
-import { MongooseMixin, MongooseServiceSchema } from '@app/core/mixins/mongoose.mixin';
-import { AuthSpecialRole, BaseService, ServiceMetadata } from '@app/types';
+import { CacheCleaner } from '@ltv/core/mixins/cache.cleaner.mixin';
+import { MongooseMixin, MongooseServiceSchema } from '@ltv/core/mixins/mongoose.mixin';
+import { AuthSpecialRole, BaseService, ServiceMetadata } from '@ltv/types';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models';
@@ -18,7 +18,7 @@ const { ADMIN_USER, ADMIN_PASSWORD, ADMIN_EMAIL } = process.env;
   mixins: [
     MongooseMixin(User),
     CacheCleaner(['cache.clean.users']),
-    ConfigMixin(['site.**', 'users.**'])
+    ConfigMixin(['mail.**', 'user.**'])
   ],
   settings: {
     rest: true,
@@ -101,8 +101,7 @@ class UserService extends BaseService implements UserService {
   @Action({
     params: {
       token: { type: 'string' }
-    },
-    rest: 'POST /auth/verify'
+    }
   })
   async verify(ctx: Context<Token>) {
     const user = await this.adapter.findOne({
