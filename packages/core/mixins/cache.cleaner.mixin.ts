@@ -1,7 +1,12 @@
 import { ServiceEvents, ServiceSchema, ServiceSettingSchema } from 'moleculer';
 
+export interface ServiceWithCacher {
+  delCache: (keys: string[] | string) => void;
+  cleanCache: (keys: string[] | string, force?: boolean) => void;
+}
+
 export function CacheCleaner(
-  eventNames?: string[]
+  eventNames: string[]
 ): ServiceSchema<ServiceSettingSchema> {
   const events: ServiceEvents = {};
 
@@ -17,7 +22,7 @@ export function CacheCleaner(
   const schema: ServiceSchema<ServiceSettingSchema> = {
     name: '',
     methods: {
-      forceCleanCache(keys: string[] | string) {
+      cleanCache(keys: string[] | string, force?: boolean) {
         keys = keys instanceof Array ? keys : [keys];
         keys.forEach((k) => {
           if (this.broker.cacher) {
@@ -27,12 +32,13 @@ export function CacheCleaner(
         });
       },
       delCache(keys: string[] | string) {
+        if (!this.broker.cacher) {
+          return;
+        }
         keys = keys instanceof Array ? keys : [keys];
         keys.forEach((k) => {
-          if (this.broker.cacher) {
-            this.logger.debug(`Clear local '${k}' cache`);
-            this.broker.cacher.del(`${this.name}.${k}`);
-          }
+          this.logger.debug(`Clear local '${k}' cache`);
+          this.broker.cacher.del(`${this.name}.${k}`);
         });
       },
     },

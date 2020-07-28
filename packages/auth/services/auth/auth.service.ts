@@ -118,7 +118,7 @@ class AuthService extends BaseService {
     }
 
     const userId = user._id.toString();
-    const token = signJWTToken({ id: userId }, this.configs['user.jwt.expiresIn']);
+    const token = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
     return { token, userId };
   }
 
@@ -184,7 +184,7 @@ class AuthService extends BaseService {
       entity.password = hashPass(params.password, pwdSalt);
     } else if (this.configs['user.passwordless.enabled']) {
       entity.passwordless = true;
-      entity.password = this.signJWTToken();
+      entity.password = this.genRandomToken();
     } else {
       return AuthError.passwordCantEmpty().reject();
     }
@@ -192,7 +192,7 @@ class AuthService extends BaseService {
     // Generate verification token
     if (this.configs['user.verification.enabled']) {
       entity.verified = false;
-      entity.verificationToken = this.signJWTToken();
+      entity.verificationToken = this.genRandomToken();
     }
 
     // Create new user
@@ -223,9 +223,9 @@ class AuthService extends BaseService {
     }
   })
   async resolveToken(ctx: Context<Token>) {
-    const { id } = await this.verifyJWTToken(ctx.params.token);
+    const verified = await this.verifyJWTToken(ctx.params.token);
 
-    const user: User = await ctx.call(`v1.${SERVICE_USERS}.findById`, { id });
+    const user: User = await ctx.call(`v1.${SERVICE_USERS}.findById`, { id: verified.id });
     if (!user) {
       return AuthError.userIsNotRegistered().reject();
     }
@@ -254,10 +254,10 @@ class AuthService extends BaseService {
   @Method
   async verifyJWTToken(token: string): Promise<DecodedJWT> {
     const decoded: any = await verifyJWT(token);
-    if (!decoded.id) {
+    if (!decoded.user) {
       return AuthError.invalidToken().reject();
     }
-    const userId = decoded.id;
+    const userId = decoded.user.id;
     const hashedToken = sha512(token);
     const foundToken = await this.broker.call<Token, any>(`v1.${SERVICE_TOKEN}.findToken`, {
       userId,
@@ -275,7 +275,7 @@ class AuthService extends BaseService {
       return AuthError.tokenHasExpired().reject();
     }
 
-    return { id: decoded.id, expired: false };
+    return { id: decoded.user.id, expired: false };
   }
   /**
    * Generate a token
@@ -283,7 +283,7 @@ class AuthService extends BaseService {
    * @param {Number} len Token length
    */
   @Method
-  signJWTToken(len = 25) {
+  genRandomToken(len = 25) {
     return crypto.randomBytes(len).toString('hex');
   }
 

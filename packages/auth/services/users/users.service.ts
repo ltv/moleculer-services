@@ -44,7 +44,8 @@ class UserService extends BaseService implements UserService {
    */
   @Action({
     cache: {
-      keys: ['#userId']
+      keys: ['#userId'],
+      ttl: 60 * 30 // 30 mins
     },
     rest: 'GET /me'
   })

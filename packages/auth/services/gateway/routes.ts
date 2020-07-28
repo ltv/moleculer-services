@@ -1,6 +1,6 @@
-import { SERVICE_AUTH, SERVICE_USERS } from 'utils/constants';
 import { Context } from '@ltv/types';
 import { ClientRequest } from 'http';
+import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
 
 export const routes: any[] = [
   {
@@ -36,7 +36,8 @@ export const routes: any[] = [
     autoAliases: false,
     aliases: {
       'GET /me': `v1.${SERVICE_USERS}.me`,
-      'DELETE /logout': `v1.${SERVICE_AUTH}.logout`
+      'DELETE /logout': `v1.${SERVICE_AUTH}.logout`,
+      'POST /renew': `v1.${SERVICE_TOKEN}.renew`
     }
   }
 ];

@@ -6,7 +6,7 @@ import { ServiceSchema } from 'moleculer';
 import ApiService from 'moleculer-web';
 import { SERVICE_GATEWAY } from 'utils/constants';
 import { routes } from './routes';
-import { authenticate } from './utils';
+import { authenticate, getOriginEnv } from './utils';
 
 const ApiGateway: ServiceSchema = {
   name: SERVICE_GATEWAY,
@@ -15,7 +15,8 @@ const ApiGateway: ServiceSchema = {
   settings: {
     port: +process.env.APP_PORT || 3000,
     cors: {
-      origin: '*'
+      origin: getOriginEnv(),
+      methods: ['GET', 'OPTIONS', 'POST', 'DELETE']
     },
     use: [
       helmet(),

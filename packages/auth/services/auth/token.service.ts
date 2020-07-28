@@ -1,12 +1,12 @@
 import { MongooseMixin, MongooseServiceSchema } from '@ltv/core/mixins/mongoose.mixin';
 import { BaseService, Context } from '@ltv/types';
+import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token } from 'models';
 import { Action, Service } from 'moleculer-decorators';
-import { SERVICE_TOKEN } from 'utils/constants';
+import { SERVICE_TOKEN, SERVICE_AUTH } from 'utils/constants';
 import { signJWTToken } from 'utils/jwt';
 import { sha512 } from 'utils/password';
-import { AuthError } from 'errors';
 
 interface AuthTokenService extends BaseService, MongooseServiceSchema<Token> {}
 
@@ -47,21 +47,20 @@ class AuthTokenService extends BaseService implements AuthTokenService {
     return this.adapter.findOne({ userId, token });
   }
 
-  @Action({
-    name: 'renew',
-    rest: 'POST /renew'
-  })
+  @Action({ name: 'renew' })
   async actRenew(ctx: Context) {
     const { userId, token } = ctx.meta;
-    const tok = await this.adapter.findOne({ userId, token });
+    const tok = await this.adapter.findOne({ userId, token: sha512(token) });
     if (tok) {
       // renew token when the old token is valid and existed
-      return this.renewToken(tok);
+      return this.renewToken(tok).then((renewed) =>
+        this.removeTokenCache(token).then(() => renewed)
+      );
     }
 
     // when the old token is not existed in db, it means, someone already renewed
-    return ctx
-      .call(`v1.${SERVICE_TOKEN}.removeMany`, { userId })
+    return this.adapter
+      .removeMany({ userId })
       .then(() => AuthError.accountHasBeenHacked().reject());
   }
 
@@ -77,9 +76,19 @@ class AuthTokenService extends BaseService implements AuthTokenService {
   async renewToken(token: Token) {
     const tokenId = token._id.toString();
     const userId = token.userId.toString();
-    const newToken = signJWTToken({ id: userId }, this.configs['user.jwt.expiresIn']);
-    const updated = await this.adapter.updateById(tokenId, { $set: { token: newToken } });
-    return updated;
+    const newToken = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
+    return this.adapter
+      .updateById(tokenId, { $set: { token: sha512(newToken) } })
+      .then(() => ({ token: newToken }));
+  }
+
+  removeTokenCache(token: string) {
+    if (!this.broker.cacher || !token) {
+      return Promise.resolve();
+    }
+
+    const key: string = `v1.${SERVICE_AUTH}.resolveToken:${token}`;
+    return this.broker.cacher.del(key);
   }
   // Methods (E)
 }

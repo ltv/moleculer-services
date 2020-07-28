@@ -1,6 +1,7 @@
 import { AuthError } from 'errors';
 import fs from 'fs';
 import jwt, { SignOptions, VerifyOptions } from 'jsonwebtoken';
+import { GenericObject } from 'moleculer';
 import path from 'path';
 
 const ROOT_PATH = process.cwd();
@@ -14,11 +15,11 @@ function readKeyContent(keyPath: string) {
  * Sign JWT Key with Public & Private Key
  *
  * @param type string refreshToken || undefined
- * @param payload { [key: string]: string }
+ * @param payload GenericObject
  * @param expiredIn expressed in seconds or a string describing a time span zeit/ms.
  */
 export function signJWTToken(
-  payload: { [key: string]: string },
+  payload: GenericObject,
   expiresIn: string,
   options?: SignOptions
 ): string {

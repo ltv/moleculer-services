@@ -1,7 +1,7 @@
 import moleculer, {
-  Service,
   ActionSchema as MoleculerActionSchema,
   GenericObject,
+  Service,
 } from 'moleculer';
 
 export type ServiceMetadata = {
@@ -77,21 +77,8 @@ export type ClassType<T> = new (...args: any) => T;
 
 export class BaseService extends Service {
   protected configs: GenericObject;
-  clean: () => void;
 
   entityChanged: (type: string, json: any, ctx: Context) => Promise<any>;
-
-  clearCache: () => Promise<any>;
-
-  forceCleanCache: (keys: string[] | string) => void;
-
-  removeCache: (keys: string[] | string) => void;
-
-  nextval: (seqNm: string) => number;
-
-  encodeHex: (entityId: number) => string;
-
-  decodeHex: (code: string) => number;
 
   memoize: (
     key: string,

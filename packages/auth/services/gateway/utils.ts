@@ -51,3 +51,11 @@ export async function authenticate(ctx: Context, _: any, req: ClientRequest) {
   }
   return AuthError.invalidToken().reject();
 }
+
+export function getOriginEnv() {
+  const { CORS_ORIGINS } = process.env;
+  if (!CORS_ORIGINS || ['true', 'false', true, false].indexOf(CORS_ORIGINS) !== -1) {
+    return CORS_ORIGINS == 'true';
+  }
+  return CORS_ORIGINS.replace(/\s+/, '').split(',');
+}
