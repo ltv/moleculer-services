@@ -1,11 +1,12 @@
 {
   "name": "@ltv/moleculer-core",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "author": {
     "name": "Luc Duong",
     "email": "luc@ltv.vn"
   },
-  "main": "dist/lib/index.js",
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
@@ -50,6 +51,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.23.0",
     "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-typescript2": "^0.27.1",
     "test-loader": "^0.0.1",
     "ts-jest": "^26.1.3",
     "ts-node": "^8.10.2"
