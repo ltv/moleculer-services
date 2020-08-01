@@ -1,7 +1,5 @@
 import { Errors } from 'moleculer';
 
-const { MoleculerClientError } = Errors;
-
 export interface IError {
   type?: string;
   message?: string;
@@ -11,9 +9,9 @@ export interface IError {
 
 export type ErrorMessage = string | IError;
 
-export class BaseError extends MoleculerClientError {
-  constructor(message: string, code: number, type: string) {
-    super(message, code || 500, type);
+export class BaseError extends Errors.MoleculerClientError {
+  constructor(message: string, code: number, type: string | undefined) {
+    super(message, code || 500, type || '');
     this.name = 'BaseError';
   }
 
@@ -28,6 +26,6 @@ export class BaseError extends MoleculerClientError {
       error.message = message;
     }
     const { type, message: errMsg, code } = error;
-    return new this(errMsg, code, type);
+    return new this(errMsg || '', code || 500, type);
   }
 }

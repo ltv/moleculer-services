@@ -5,18 +5,18 @@ import defaultsDeep from 'lodash.defaultsdeep';
 
 // Credits: Copied from https://github.com/i18next/i18next-express-middleware/blob/master/src/utils.js
 function setPath(object: any, path: any, newValue: any) {
-  let stack;
+  let stack: string[] = [];
   if (typeof path !== 'string') stack = [].concat(path);
   if (typeof path === 'string') stack = path.split('.');
 
   while (stack.length > 1) {
-    let key = stack.shift();
+    let key = stack.shift() || '';
     if (key.indexOf('###') > -1) key = key.replace(/###/g, '.');
     if (!object[key]) object[key] = {};
     object = object[key];
   }
 
-  let key = stack.shift();
+  let key = stack.shift() || '';
   if (key.indexOf('###') > -1) key = key.replace(/###/g, '.');
   object[key] = newValue;
 }
@@ -27,10 +27,15 @@ export interface I18NextMixinOptions {
 }
 
 export function I18NextMixin(mixinOptions?: I18NextMixinOptions) {
-  mixinOptions = defaultsDeep(mixinOptions, {
-    folder: './locales',
-    routePath: '/locales',
-  });
+  mixinOptions =
+    defaultsDeep(mixinOptions, {
+      folder: './locales',
+      routePath: '/locales',
+    }) || {};
+
+  if (!mixinOptions?.folder || !mixinOptions.routePath) {
+    return {};
+  }
 
   i18next
     .use(i18nextFs)
@@ -65,7 +70,7 @@ export function I18NextMixin(mixinOptions?: I18NextMixinOptions) {
     name: '',
     created() {
       const route = {
-        path: mixinOptions.routePath,
+        path: mixinOptions?.routePath,
 
         aliases: {
           // multiload backend route

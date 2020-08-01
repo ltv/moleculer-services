@@ -5,8 +5,9 @@ import isFunction from 'lodash.isfunction';
 import omit from 'lodash.omit';
 import { Errors, ServiceSchema } from 'moleculer';
 import nodemailer from 'nodemailer';
-import { htmlToText } from 'nodemailer-html-to-text';
 import path from 'path';
+
+const { htmlToText } = require('nodemailer-html-to-text');
 
 const { MoleculerError, MoleculerRetryableError } = Errors;
 

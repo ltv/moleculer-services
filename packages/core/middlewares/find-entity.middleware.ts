@@ -1,5 +1,5 @@
 import { ActionHandler, Middleware } from 'moleculer';
-import { ActionSchema, Context } from '@ltv/types';
+import { ActionSchema, Context } from '../types';
 import { DatabaseError } from '../errors';
 
 export function FindEntityMiddleware(): Middleware {
@@ -10,7 +10,7 @@ export function FindEntityMiddleware(): Middleware {
           ctx: Context<{ id: string | number }>
         ) {
           const svc = ctx.service;
-          const entity = await svc.getById(ctx.params.id, true);
+          const entity = await svc?.getById(ctx.params.id, true);
           if (!entity) {
             return DatabaseError.notFoundEntity().reject();
           }
@@ -24,5 +24,5 @@ export function FindEntityMiddleware(): Middleware {
 
       return next;
     },
-  };
+  } as any;
 }

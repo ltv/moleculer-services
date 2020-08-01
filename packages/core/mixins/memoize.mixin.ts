@@ -23,7 +23,7 @@ export function MemoizeMixin(
         if (res) return res;
 
         res = await fn();
-        this.broker.cacher.set(key, res, options.ttl);
+        this.broker.cacher.set(key, res, options?.ttl);
 
         return res;
       },

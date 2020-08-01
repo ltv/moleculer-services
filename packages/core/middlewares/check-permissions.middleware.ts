@@ -4,7 +4,7 @@ import {
   AuthSpecialRole,
   Context,
   CustomPermissionFunc,
-} from '@ltv/types';
+} from '../types';
 import { AppError } from '../errors';
 import isFunction from 'lodash.isfunction';
 import isString from 'lodash.isstring';
@@ -49,11 +49,14 @@ export function CheckPermissionsMiddleware(
     { acl: defaultAclOpts, roles: defaultRolesOpts },
     options || {}
   );
-  const { version } = options.acl;
-  const aclServiceName = `${version ? version + '.' : ''}${options.acl.name}`;
+  const { version } = options.acl || {};
+  const aclServiceName = `${version ? version + '.' : ''}${options?.acl?.name}`;
   return {
     localAction(next: ActionHandler, action: ActionSchema) {
       const { permissions } = action;
+      if (!permissions) {
+        return next;
+      }
       const shouldCheckPermissions = permissions && permissions.length;
       if (shouldCheckPermissions) {
         const permNames: string[] = [];
@@ -66,10 +69,10 @@ export function CheckPermissionsMiddleware(
           }
 
           if (isString(perm)) {
-            if (perm === options.roles.owner) {
+            if (perm === options.roles?.owner) {
               return permFuncs.push((ctx: Context) => {
-                if (isFunction(ctx.service.checkOwner)) {
-                  return ctx.service.checkOwner.call(this, ctx);
+                if (isFunction(ctx.service?.checkOwner)) {
+                  return ctx.service?.checkOwner.call(this, ctx);
                 }
                 return Promise.resolve(false);
               });
@@ -123,5 +126,5 @@ export function CheckPermissionsMiddleware(
       }
       return next;
     },
-  };
+  } as any;
 }

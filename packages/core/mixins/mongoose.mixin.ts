@@ -1,5 +1,4 @@
 const DbService = require('moleculer-db');
-import { ClassType } from '@ltv/types';
 import { buildSchema, DocumentType } from '@typegoose/typegoose';
 import isFunction from 'lodash.isfunction';
 import {
@@ -11,6 +10,7 @@ import {
 import MongooseAdapter from 'moleculer-db-adapter-mongoose';
 import { ObjectId } from 'mongodb';
 import { Connection, Schema, SchemaType, SchemaTypes } from 'mongoose';
+import { ClassType } from '../types';
 
 const TESTING = process.env.NODE_ENV === 'test';
 
