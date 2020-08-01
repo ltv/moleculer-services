@@ -1,6 +1,6 @@
 {
   "name": "@ltv/auth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "LTV moleculer auth service",
   "main": "index.js",
   "type": "index.d.ts",
@@ -41,8 +41,8 @@
     "redlock": "^4.1.0"
   },
   "devDependencies": {
-    "@ltv/moleculer-core": "^0.2.0",
-    "@ltv/types": "^0.2.0",
+    "@ltv/moleculer-core": "^0.2.1",
+    "@ltv/types": "^0.2.1",
     "@types/bcrypt": "^3.0.0",
     "@types/faker": "^4.1.11",
     "@types/helmet": "^0.0.45",
