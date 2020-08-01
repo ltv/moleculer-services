@@ -8,7 +8,7 @@ import { Action, Method, Service } from 'moleculer-decorators';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
 import { signJWTToken, verifyJWT } from 'utils/jwt';
-import { comparePassword, genSalt, hashPass, sha512 } from 'utils/password';
+import { comparePassword, genSalt, hashPass } from 'utils/password';
 import { AuthLoginRule } from './validators/index.validator';
 
 const name = SERVICE_AUTH;
@@ -258,10 +258,9 @@ class AuthService extends BaseService {
       return AuthError.invalidToken().reject();
     }
     const userId = decoded.user.id;
-    const hashedToken = sha512(token);
     const foundToken = await this.broker.call<Token, any>(`v1.${SERVICE_TOKEN}.findToken`, {
       userId,
-      token: hashedToken
+      token
     });
 
     if (!foundToken || !decoded.exp) {

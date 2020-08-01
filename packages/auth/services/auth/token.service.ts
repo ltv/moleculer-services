@@ -4,7 +4,7 @@ import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token } from 'models';
 import { Action, Service } from 'moleculer-decorators';
-import { SERVICE_TOKEN, SERVICE_AUTH } from 'utils/constants';
+import { SERVICE_AUTH, SERVICE_TOKEN } from 'utils/constants';
 import { signJWTToken } from 'utils/jwt';
 import { sha512 } from 'utils/password';
 
@@ -44,7 +44,7 @@ class AuthTokenService extends BaseService implements AuthTokenService {
   })
   actFindToken(ctx: Context<Token>) {
     const { userId, token } = ctx.params;
-    return this.adapter.findOne({ userId, token });
+    return this.adapter.findOne({ userId, token: sha512(token) });
   }
 
   @Action({ name: 'renew' })
