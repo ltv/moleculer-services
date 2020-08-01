@@ -1,5 +1,5 @@
-import { CacheCleaner } from '@ltv/core/mixins/cache.cleaner.mixin';
-import { MongooseMixin, MongooseServiceSchema } from '@ltv/core/mixins/mongoose.mixin';
+import { CacheCleaner } from '@ltv/moleculer-core/mixins/cache.cleaner.mixin';
+import { MongooseMixin, MongooseServiceSchema } from '@ltv/moleculer-core/mixins/mongoose.mixin';
 import { AuthSpecialRole, BaseService, ServiceMetadata } from '@ltv/types';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';

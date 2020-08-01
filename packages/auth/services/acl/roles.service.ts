@@ -1,4 +1,4 @@
-import { MongooseMixin, MongooseServiceSchema } from '@ltv/core/mixins/mongoose.mixin';
+import { MongooseMixin, MongooseServiceSchema } from '@ltv/moleculer-core/mixins/mongoose.mixin';
 import { BaseService, Context } from '@ltv/types';
 import { Role } from 'models/acl';
 import { Action, Service } from 'moleculer-decorators';

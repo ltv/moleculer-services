@@ -1,4 +1,4 @@
-import { ConfigMixin as CoreConfigMixin } from '@ltv/core/mixins/config.mixin';
+import { ConfigMixin as CoreConfigMixin } from '@ltv/moleculer-core/mixins/config.mixin';
 import { SERVICE_CONFIGS } from 'utils/constants';
 
 export const ConfigMixin = (keys: string[], options?: any) =>

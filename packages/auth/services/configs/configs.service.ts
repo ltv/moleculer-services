@@ -1,5 +1,5 @@
-import { CacheCleaner } from '@ltv/core/mixins/cache.cleaner.mixin';
-import { MongooseMixin } from '@ltv/core/mixins/mongoose.mixin';
+import { CacheCleaner } from '@ltv/moleculer-core/mixins/cache.cleaner.mixin';
+import { MongooseMixin } from '@ltv/moleculer-core/mixins/mongoose.mixin';
 import { AuthSpecialRole, BaseService, Context } from '@ltv/types';
 import flattenDeep from 'lodash.flattendeep';
 import isEqual from 'lodash.isequal';

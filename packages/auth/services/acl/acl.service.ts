@@ -1,4 +1,4 @@
-import { MemoizeMixin } from '@ltv/core/mixins';
+import { MemoizeMixin } from '@ltv/moleculer-core/mixins';
 import { BaseService, Context } from '@ltv/types';
 import compact from 'lodash.compact';
 import flattenDeep from 'lodash.flattendeep';

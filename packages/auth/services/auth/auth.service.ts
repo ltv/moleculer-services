@@ -1,4 +1,4 @@
-import createHashIds from '@ltv/core/utils/hashids';
+import createHashIds from '@ltv/moleculer-core/utils/hashids';
 import { BaseService, Context } from '@ltv/types';
 import crypto from 'crypto';
 import { AuthError } from 'errors';

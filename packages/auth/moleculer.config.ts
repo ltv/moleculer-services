@@ -1,4 +1,4 @@
-import { CreateHealthCheckMiddleware, FindEntityMiddleware } from '@ltv/core/middlewares';
+import { CreateHealthCheckMiddleware, FindEntityMiddleware } from '@ltv/moleculer-core/middlewares';
 import { BrokerOptions, Errors, LoggerConfig, TracerOptions } from 'moleculer';
 import os from 'os';
 import { inspect } from 'util';

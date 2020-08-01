@@ -1,4 +1,4 @@
-import { MongooseMixin } from '@ltv/core/mixins/mongoose.mixin';
+import { MongooseMixin } from '@ltv/moleculer-core/mixins/mongoose.mixin';
 import { BaseService } from '@ltv/types';
 import { Permission } from 'models/acl';
 import { Service } from 'moleculer-decorators';
