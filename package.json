@@ -1,6 +1,6 @@
 {
   "name": "moleculer-services",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core services using for moleculerjs framework",
   "repository": "git@github.com:ltv/moleculer-services.git",
   "author": "Luc <luc@ltv.vn>",
