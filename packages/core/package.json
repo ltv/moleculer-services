@@ -1,7 +1,6 @@
 {
   "name": "@ltv/moleculer-core",
   "version": "0.2.0",
-  "private": true,
   "author": {
     "name": "Luc Duong",
     "email": "luc@ltv.vn"
