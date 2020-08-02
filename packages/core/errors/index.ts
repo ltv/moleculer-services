@@ -3,12 +3,6 @@ import { BaseError, ErrorMessage, IError } from './base.error';
 export * from './base.error';
 export * from './db.error';
 
-export const ERR_NO_TOKEN = 'NO_TOKEN';
-export const ERR_INVALID_TOKEN = 'INVALID_TOKEN';
-export const ERR_UNABLE_DECODE_PARAM = 'UNABLE_DECODE_PARAM';
-export const ERR_ORIGIN_NOT_FOUND = 'ORIGIN_NOT_FOUND';
-export const ERR_ORIGIN_NOT_ALLOWED = 'ORIGIN_NOT_ALLOWED';
-
 const AppErrorMap: { [key: string]: IError } = {
   INVALID_REQUEST: {
     type: 'INVALID_REQUEST',

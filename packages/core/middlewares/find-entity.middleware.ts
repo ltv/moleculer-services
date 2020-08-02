@@ -1,6 +1,6 @@
 import { ActionHandler, Middleware } from 'moleculer';
 import { ActionSchema, Context } from '../types';
-import { DatabaseError } from '../errors';
+import { DatabaseError } from '../errors/db.error';
 
 export function FindEntityMiddleware(): Middleware {
   return {
