@@ -1,13 +1,13 @@
 {
   "name": "@ltv/moleculer-core",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": {
     "name": "Luc Duong",
     "email": "luc@ltv.vn"
   },
   "license": "UNLICENSED",
   "main": "dist/index.js",
-  "typings": "dist/types/index.d.ts",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
