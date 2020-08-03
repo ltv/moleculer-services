@@ -118,15 +118,7 @@ class AuthService extends BaseService {
     }
 
     const userId = user._id.toString();
-    // const token = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
-    const token = await this.memoize<string>(
-      `${this.schema.name}-login-token`,
-      { userId },
-      async () => {
-        return signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
-      },
-      { ttl: ms(this.configs['user.jwt.expiresIn']) / 1000 } // 30 mins
-    );
+    const token = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
     return { token, userId };
   }
 
