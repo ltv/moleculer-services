@@ -4,6 +4,7 @@ import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
 import { Token, User } from 'models/auth';
 import { Action, Method, Service } from 'moleculer-decorators';
+import ms from 'ms';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
 import { signJWTToken, verifyJWT } from 'utils/jwt';
@@ -117,7 +118,15 @@ class AuthService extends BaseService {
     }
 
     const userId = user._id.toString();
-    const token = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
+    // const token = signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
+    const token = await this.memoize<string>(
+      `${this.schema.name}-login-token`,
+      { userId },
+      async () => {
+        return signJWTToken({ user: { id: userId } }, this.configs['user.jwt.expiresIn']);
+      },
+      { ttl: ms(this.configs['user.jwt.expiresIn']) / 1000 } // 30 mins
+    );
     return { token, userId };
   }
 

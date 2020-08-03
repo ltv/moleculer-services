@@ -37,17 +37,17 @@ export class BaseService<S = ServiceSettingSchema> extends Service<S> {
     super(broker, schema);
   }
 
-  protected async memoize<T>(
+  protected async memoize<T, P = any>(
     name: string,
-    params: any,
-    callback: () => Promise<T>,
+    params: P,
+    fallback: (params?: P) => Promise<T>,
     options?: MemoizeOptions
   ): Promise<T> {
-    if (!this.broker.cacher) return callback();
+    if (!this.broker.cacher) return fallback(params);
 
     const key = this.broker.cacher.defaultKeygen(
       `${name}:memoize-${name}`,
-      params,
+      params as any,
       {},
       []
     );
@@ -55,7 +55,7 @@ export class BaseService<S = ServiceSettingSchema> extends Service<S> {
     let res = await this.broker.cacher.get(key);
     if (res) return <T>res;
 
-    res = await callback();
+    res = await fallback(params);
     this.broker.cacher.set(key, res, options?.ttl);
 
     return <T>res;

@@ -23,7 +23,7 @@ export class SocialLink {
 
 @index({ email: 1 }, { unique: true })
 @index({ firstName: 'text', lastName: 'text', email: 'text' })
-@plugin(mongooseHidden)
+@plugin(mongooseHidden, { hidden: { _id: false } })
 @plugin(hashPassword)
 @modelOptions({ schemaOptions: { collection: 'users' } })
 export class User extends BaseWithCreatorAndTimestamp {
@@ -41,7 +41,7 @@ export class User extends BaseWithCreatorAndTimestamp {
   @prop({ readonly: true })
   avatar?: string;
 
-  @prop({ minlength: 8, maxlength: 60, hide: true })
+  @prop({ minlength: 8, maxlength: 60 })
   password?: string;
   @prop({ hide: true })
   passwordSalt?: string;
