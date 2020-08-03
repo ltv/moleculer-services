@@ -1,14 +1,11 @@
-import {
-  ActionPermission,
-  ActionSchema,
-  AuthSpecialRole,
-  Context,
-  CustomPermissionFunc,
-} from '../types';
-import { AppError } from '../errors';
 import isFunction from 'lodash.isfunction';
 import isString from 'lodash.isstring';
-import { ActionHandler, Middleware } from 'moleculer';
+import { ActionHandler, ActionSchema, Context, Middleware } from 'moleculer';
+import { AuthSpecialRole } from '../core';
+import { AppError } from '../errors';
+
+export type CustomPermissionFunc = (ctx: Context) => Promise<boolean>;
+export type ActionPermission = string | CustomPermissionFunc;
 
 export interface PermissionParams {
   roles: string[];
@@ -52,7 +49,10 @@ export function CheckPermissionsMiddleware(
   const { version } = options.acl || {};
   const aclServiceName = `${version ? version + '.' : ''}${options?.acl?.name}`;
   return {
-    localAction(next: ActionHandler, action: ActionSchema) {
+    localAction(
+      next: ActionHandler,
+      action: ActionSchema & { permissions?: ActionPermission[] }
+    ) {
       const { permissions } = action;
       if (!permissions) {
         return next;
@@ -83,7 +83,9 @@ export function CheckPermissionsMiddleware(
           }
         });
 
-        return async function CheckPermissionsMiddleware(ctx: Context) {
+        return async function CheckPermissionsMiddleware(
+          ctx: Context<any, { roles: string[] }>
+        ) {
           const { roles } = ctx.meta;
           if (roles && roles.length) {
             let res: boolean = false;
@@ -126,5 +128,5 @@ export function CheckPermissionsMiddleware(
       }
       return next;
     },
-  } as any;
+  };
 }

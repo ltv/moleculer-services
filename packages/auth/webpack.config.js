@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 function resolve(dir) {
   return path.join(__dirname, dir);
@@ -37,26 +38,6 @@ function getEntries() {
     }, {});
 }
 
-const nodeModules = {};
-fs.readdirSync('node_modules')
-  .filter(function (x) {
-    return ['.bin'].indexOf(x) === -1;
-  })
-  .forEach(function (mod) {
-    nodeModules[mod] = 'commonjs ' + mod;
-  });
-
-if (fs.existsSync('../../node_modules')) {
-  console.log('Existed parent node_modules');
-  fs.readdirSync('../../node_modules')
-    .filter(function (x) {
-      return ['.bin'].indexOf(x) === -1;
-    })
-    .forEach(function (mod) {
-      nodeModules[mod] = 'commonjs ' + mod;
-    });
-}
-
 module.exports = {
   mode: 'production',
   target: 'node',
@@ -68,7 +49,12 @@ module.exports = {
     __filename: true,
     __dirname: true
   },
-  externals: nodeModules,
+  externals: [
+    nodeExternals({
+      additionalModuleDirs: ['../../node_modules']
+      // allowlist: ['@ltv/moleculer-core']
+    })
+  ],
   entry: {
     'moleculer.config': './moleculer.config.ts',
     ...getEntries()
@@ -79,16 +65,11 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        test: /\.(graphql|gql)$/,
-        exclude: /node_modules/,
-        loader: 'graphql-tag/loader'
       }
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.graphql', '.gql'],
+    extensions: ['.tsx', '.ts', '.js'],
     alias: {
       '@': resolve('src'),
       utils: resolve('utils'),
@@ -113,10 +94,6 @@ module.exports = {
           from: 'package.json',
           to: 'package.json',
           toType: 'file'
-        },
-        {
-          from: 'graphql',
-          to: 'graphql'
         },
         {
           from: 'services/mail/templates',

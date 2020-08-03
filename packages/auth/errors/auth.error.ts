@@ -1,4 +1,4 @@
-import { BaseError, ErrorMessage, IError } from '@ltv/moleculer-core/errors';
+import { BaseError, ErrorMessage, IError } from '@ltv/moleculer-core';
 
 const AuthErrorMap: { [key: string]: IError } = {
   USER_ALREADY_LOGGED_IN: {

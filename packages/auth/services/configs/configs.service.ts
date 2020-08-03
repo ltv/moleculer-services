@@ -1,10 +1,14 @@
-import { CacheCleaner } from '@ltv/moleculer-core/mixins/cache.cleaner.mixin';
-import { MongooseMixin } from '@ltv/moleculer-core/mixins/mongoose.mixin';
-import { AuthSpecialRole, BaseService, Context } from '@ltv/types';
+import {
+  AuthSpecialRole,
+  BaseService,
+  CacheCleaner,
+  Context,
+  MongooseMixin
+} from '@ltv/moleculer-core';
 import flattenDeep from 'lodash.flattendeep';
 import isEqual from 'lodash.isequal';
 import uniqBy from 'lodash.uniqby';
-import { Config } from 'models';
+import { Config } from 'models/config';
 import { Errors } from 'moleculer';
 import { Action, Method, Service } from 'moleculer-decorators';
 import { SERVICE_CONFIGS } from 'utils/constants';

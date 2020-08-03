@@ -1,14 +1,11 @@
-import { CacheCleaner } from '@ltv/moleculer-core/mixins/cache.cleaner.mixin';
-import { MongooseMixin, MongooseServiceSchema } from '@ltv/moleculer-core/mixins/mongoose.mixin';
-import { AuthSpecialRole, BaseService, ServiceMetadata } from '@ltv/types';
+import { AuthSpecialRole, CacheCleaner, MongooseMixin, ServiceMetadata } from '@ltv/moleculer-core';
+import { MongooseService } from 'core';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
-import { Token, User } from 'models';
+import { Token, User } from 'models/auth';
 import { Context } from 'moleculer';
 import { Action, Service } from 'moleculer-decorators';
 import { SERVICE_USERS } from 'utils/constants';
-
-interface UserService extends BaseService, MongooseServiceSchema<User> {}
 
 const { ADMIN_USER, ADMIN_PASSWORD, ADMIN_EMAIL } = process.env;
 
@@ -30,7 +27,7 @@ const { ADMIN_USER, ADMIN_PASSWORD, ADMIN_EMAIL } = process.env;
     }
   }
 })
-class UserService extends BaseService implements UserService {
+class UserService extends MongooseService<User> {
   async setVerified(ctx: Context<User, ServiceMetadata>) {
     ctx.params.verified = true;
   }

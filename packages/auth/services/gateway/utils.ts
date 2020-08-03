@@ -1,7 +1,8 @@
-import { AuthSpecialRole, Context } from '@ltv/types';
+import { AuthSpecialRole, ServiceMetadata } from '@ltv/moleculer-core';
 import { AuthError } from 'errors';
 import pick from 'lodash.pick';
-import { User } from 'models';
+import { User } from 'models/auth';
+import { Context } from 'moleculer';
 import { SERVICE_AUTH } from 'utils/constants';
 
 interface ClientRequest {
@@ -17,7 +18,11 @@ interface ClientRequest {
  * @param {IncomingRequest} req
  * @returns {Promise}
  */
-export async function authenticate(ctx: Context, _: any, req: ClientRequest) {
+export async function authenticate(
+  ctx: Context<any, ServiceMetadata & { user: User }>,
+  _: any,
+  req: ClientRequest
+) {
   let token;
 
   // Get JWT token from Authorization header

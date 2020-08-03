@@ -1,5 +1,4 @@
-import { MemoizeMixin } from '@ltv/moleculer-core/mixins';
-import { BaseService, Context } from '@ltv/types';
+import { BaseService, Context } from '@ltv/moleculer-core';
 import compact from 'lodash.compact';
 import flattenDeep from 'lodash.flattendeep';
 import uniq from 'lodash.uniq';
@@ -12,7 +11,7 @@ const { match } = require('moleculer').Utils;
 @Service({
   name: SERVICE_ACL,
   version: 1,
-  mixins: [MemoizeMixin()],
+  mixins: [],
   settings: {},
   dependencies: [
     { name: SERVICE_PERMISSIONS, version: 1 },

@@ -1,5 +1,4 @@
-import { I18NextMixin } from '@ltv/moleculer-core/mixins/i18next.mixin';
-import { enhanceResJson } from '@ltv/moleculer-core/utils/json';
+import { enhanceResJson } from '@ltv/moleculer-core';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import { ServiceSchema } from 'moleculer';
@@ -10,7 +9,7 @@ import { authenticate, getOriginEnv } from './utils';
 
 const ApiGateway: ServiceSchema = {
   name: SERVICE_GATEWAY,
-  mixins: [ApiService, I18NextMixin()],
+  mixins: [ApiService],
 
   settings: {
     port: +process.env.APP_PORT || 3000,

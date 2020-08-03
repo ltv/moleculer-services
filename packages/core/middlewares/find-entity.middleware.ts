@@ -1,5 +1,10 @@
-import { ActionHandler, Middleware } from 'moleculer';
-import { ActionSchema, Context } from '../types';
+import {
+  ActionHandler,
+  ActionSchema,
+  Context,
+  GenericObject,
+  Middleware,
+} from 'moleculer';
 import { DatabaseError } from '../errors/db.error';
 
 export function FindEntityMiddleware(): Middleware {
@@ -7,7 +12,7 @@ export function FindEntityMiddleware(): Middleware {
     localAction(next: ActionHandler, action: ActionSchema) {
       if (action.needEntity) {
         return async function FindEntityMiddleware(
-          ctx: Context<{ id: string | number }>
+          ctx: Context<{ id: string | number }> & { locals: GenericObject }
         ) {
           const svc = ctx.service;
           const entity = await svc?.getById(ctx.params.id, true);

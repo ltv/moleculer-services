@@ -1,9 +1,8 @@
-import createHashIds from '@ltv/moleculer-core/utils/hashids';
-import { BaseService, Context } from '@ltv/types';
+import { BaseService, Context, createHashIds } from '@ltv/moleculer-core';
 import crypto from 'crypto';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
-import { Token, User } from 'models';
+import { Token, User } from 'models/auth';
 import { Action, Method, Service } from 'moleculer-decorators';
 import { RegisterUserRule } from 'services/users/validators/index.validator';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';

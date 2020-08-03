@@ -1,14 +1,13 @@
-import { MongooseMixin, MongooseServiceSchema } from '@ltv/moleculer-core/mixins/mongoose.mixin';
-import { BaseService, Context } from '@ltv/types';
+import { Context } from '@ltv/moleculer-core';
+import { MongooseService } from 'core';
 import { AuthError } from 'errors';
 import { ConfigMixin } from 'mixins/config.mixin';
-import { Token } from 'models';
+import { MongooseMixin } from 'mixins/mongoose.mixin';
+import { Token } from 'models/auth';
 import { Action, Service } from 'moleculer-decorators';
 import { SERVICE_AUTH, SERVICE_TOKEN } from 'utils/constants';
 import { signJWTToken } from 'utils/jwt';
 import { sha512 } from 'utils/password';
-
-interface AuthTokenService extends BaseService, MongooseServiceSchema<Token> {}
 
 @Service({
   name: SERVICE_TOKEN,
@@ -25,7 +24,7 @@ interface AuthTokenService extends BaseService, MongooseServiceSchema<Token> {}
     }
   }
 })
-class AuthTokenService extends BaseService implements AuthTokenService {
+class AuthTokenService extends MongooseService<Token> {
   /** HOOKS (S) */
   hashToken(ctx: Context<Token>) {
     const { token } = ctx.params;

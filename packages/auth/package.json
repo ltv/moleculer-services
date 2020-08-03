@@ -15,6 +15,7 @@
     "test": "jest --forceExit"
   },
   "dependencies": {
+    "@ltv/moleculer-core": "*",
     "@typegoose/typegoose": "^7.2.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
@@ -29,7 +30,9 @@
     "lodash.flattendeep": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.isfunction": "^3.0.9",
+    "lodash.isobject": "^3.0.2",
     "lodash.pick": "^4.4.0",
+    "lodash.set": "^4.3.2",
     "lodash.uniq": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
     "moleculer": "^0.14.8",
@@ -40,11 +43,11 @@
     "mongoose": "^5.9.18",
     "mongoose-hidden": "^1.9.0",
     "nats": "^1.4.0",
-    "redlock": "^4.1.0"
+    "redlock": "^4.1.0",
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@ltv/moleculer-core": "^0.2.1",
-    "@ltv/types": "^0.2.1",
+    "@ltv/types": "*",
     "@types/bcrypt": "^3.0.0",
     "@types/faker": "^4.1.11",
     "@types/helmet": "^0.0.45",
@@ -56,7 +59,9 @@
     "@types/lodash.flattendeep": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.isfunction": "^3.0.6",
+    "@types/lodash.isobject": "^3.0.6",
     "@types/lodash.pick": "^4.4.6",
+    "@types/lodash.set": "^4.3.6",
     "@types/lodash.uniq": "^4.5.6",
     "@types/lodash.uniqby": "^4.7.6",
     "@types/mongodb": "^3.5.20",
@@ -71,8 +76,9 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-node-externals": "^2.5.0"
   },
   "jest": {
     "preset": "ts-jest",

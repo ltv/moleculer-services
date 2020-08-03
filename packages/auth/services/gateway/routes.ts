@@ -1,4 +1,4 @@
-import { Context } from '@ltv/types';
+import { Context } from '@ltv/moleculer-core';
 import { ClientRequest } from 'http';
 import { SERVICE_AUTH, SERVICE_TOKEN, SERVICE_USERS } from 'utils/constants';
 

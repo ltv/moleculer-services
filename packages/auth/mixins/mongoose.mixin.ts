@@ -1,12 +1,7 @@
 const DbService = require('moleculer-db');
 import { buildSchema, DocumentType } from '@typegoose/typegoose';
 import isFunction from 'lodash.isfunction';
-import {
-  ActionParams,
-  ActionParamSchema,
-  Context,
-  ServiceSchema,
-} from 'moleculer';
+import { ActionParams, ActionParamSchema, Context, ServiceSchema } from 'moleculer';
 import MongooseAdapter from 'moleculer-db-adapter-mongoose';
 import { ObjectId } from 'mongodb';
 import { Connection, Schema, SchemaType, SchemaTypes } from 'mongoose';
@@ -37,9 +32,7 @@ export interface MongooseServiceSchema<T> {
   adapter: MongooseAdapterExtended<T>;
 }
 
-interface MongooseServiceSchemaOptions<T>
-  extends ServiceSchema,
-    MongooseServiceSchema<T> {}
+interface MongooseServiceSchemaOptions<T> extends ServiceSchema, MongooseServiceSchema<T> {}
 
 function extractFieldSchema(field: SchemaType): ActionParamSchema {
   switch (field.constructor) {
@@ -55,7 +48,7 @@ function extractFieldSchema(field: SchemaType): ActionParamSchema {
     case SchemaTypes.Array: {
       return {
         type: 'array',
-        items: extractFieldSchema((field as any).caster),
+        items: extractFieldSchema((field as any).caster)
       };
     }
     case SchemaTypes.Embedded: {
@@ -99,7 +92,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
           useCreateIndex: true,
           useNewUrlParser: true,
           useUnifiedTopology: true,
-          dbName,
+          dbName
         }
       );
   const mongooseSchema = buildSchema(model);
@@ -113,7 +106,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
     modelName: model.name,
 
     settings: {
-      fields: Object.keys(mongooseSchema.paths),
+      fields: Object.keys(mongooseSchema.paths)
     },
 
     methods: {
@@ -122,7 +115,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
           const eventName = `${this.name}.entity.${type}`;
           return this.broker.broadcast(eventName, {
             meta: ctx.meta,
-            entity: json,
+            entity: json
           });
         });
       },
@@ -137,7 +130,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
         }
 
         return id;
-      },
+      }
     },
 
     actions: {
@@ -145,17 +138,17 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
         params: inputParams,
         handler: function (ctx: Context<any, any>) {
           return this._create(ctx, ctx.params);
-        },
+        }
       },
       update: {
         params: {
           id: { type: 'string' },
-          ...inputParams,
+          ...inputParams
         },
         handler: function (ctx: Context<any, any>) {
           return this._update(ctx, ctx.params);
-        },
-      },
+        }
+      }
     },
 
     async afterConnected() {
@@ -171,7 +164,7 @@ export function MongooseMixin<T extends {}>(model: ClassType<T>) {
         this.logger.info(`Seed '${model.name}' collection...`);
         await this.seedDB();
       }
-    },
+    }
   };
 
   return schema;

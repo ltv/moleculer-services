@@ -1,4 +1,4 @@
-import { User } from 'models';
+import { User } from 'models/auth';
 import { genSalt, hashPass } from 'utils/password';
 import { DocumentType } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';

@@ -1,5 +1,5 @@
-import { MongooseMixin, MongooseServiceSchema } from '@ltv/moleculer-core/mixins/mongoose.mixin';
-import { BaseService, Context } from '@ltv/types';
+import { BaseService, Context, MongooseServiceSchema } from '@ltv/moleculer-core';
+import { MongooseMixin } from 'mixins/mongoose.mixin';
 import { Role } from 'models/acl';
 import { Action, Service } from 'moleculer-decorators';
 import { SERVICE_ROLES } from 'utils/constants';
@@ -13,6 +13,7 @@ interface RoleService extends MongooseServiceSchema<Role> {}
   settings: {}
 })
 class RoleService extends BaseService implements RoleService {
+  entityChanged!: (type: string, json: any, ctx: Context) => Promise<any>;
   // Actions (S)
   @Action({
     name: 'updateById',

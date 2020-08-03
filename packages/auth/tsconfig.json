@@ -9,6 +9,7 @@
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
+    "importHelpers": true,
     "resolveJsonModule": true,
     "sourceMap": false,
     "outDir": "./dist",
@@ -39,5 +40,5 @@
     ]
   },
   // "include": ["**/*.spec.ts"],
-  "exclude": ["**/*.test.ts", "dist/**", "tests/**/*"]
+  "exclude": ["**/*.test.ts", "dist/**", "tests/**/*", "../../node_modules/**/*"]
 }
