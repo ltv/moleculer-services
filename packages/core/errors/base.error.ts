@@ -21,9 +21,10 @@ export class BaseError extends Errors.MoleculerClientError {
   constructor(
     message: string,
     code: number | string,
-    type: string | undefined
+    type: string | undefined,
+    data?: any
   ) {
-    super(message, convertCode(code), type || "");
+    super(message, convertCode(code), type || "", data);
     this.name = "BaseError";
   }
 
@@ -38,6 +39,6 @@ export class BaseError extends Errors.MoleculerClientError {
       error.message = message;
     }
     const { type, message: errMsg, code } = error;
-    return new this(errMsg || "", code || 500, type);
+    return new this(errMsg || "", code || 500, type, error.data);
   }
 }
