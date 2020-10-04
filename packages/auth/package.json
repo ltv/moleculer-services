@@ -1,6 +1,6 @@
 {
   "name": "@ltv/auth",
-  "version": "0.2.1",
+  "version": "0.2.21",
   "description": "LTV moleculer auth service",
   "main": "index.js",
   "type": "index.d.ts",
@@ -15,7 +15,7 @@
     "test": "jest --forceExit"
   },
   "dependencies": {
-    "@ltv/moleculer-core": "*",
+    "@ltv/moleculer-core": "^0.2.21",
     "@typegoose/typegoose": "^7.2.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",

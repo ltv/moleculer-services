@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.21](https://github.com/ltv/moleculer-services/compare/v0.2.20...v0.2.21) (2020-10-04)
+
+**Note:** Version bump only for package @ltv/auth
+
+
+
+
+
 ## [0.2.1](https://github.com/ltv/moleculer-services/compare/v0.2.0...v0.2.1) (2020-08-01)
 
 
