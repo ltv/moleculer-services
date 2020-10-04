@@ -1,18 +1,30 @@
-import { Errors } from 'moleculer';
+import { Errors } from "moleculer";
 
-export interface IError {
+export interface IError<DataType = any> {
   type?: string;
   message?: string;
-  code?: number;
-  data?: any;
+  code?: number | string;
+  data?: DataType;
 }
 
 export type ErrorMessage = string | IError;
 
+function convertCode(code: string | number) {
+  try {
+    return parseInt(`${code}`);
+  } catch (_) {
+    return 500;
+  }
+}
+
 export class BaseError extends Errors.MoleculerClientError {
-  constructor(message: string, code: number, type: string | undefined) {
-    super(message, code || 500, type || '');
-    this.name = 'BaseError';
+  constructor(
+    message: string,
+    code: number | string,
+    type: string | undefined
+  ) {
+    super(message, convertCode(code), type || "");
+    this.name = "BaseError";
   }
 
   public reject() {
@@ -20,12 +32,12 @@ export class BaseError extends Errors.MoleculerClientError {
   }
 
   public static createError(error: IError, message?: ErrorMessage) {
-    if (typeof message === 'object') {
+    if (typeof message === "object") {
       error = Object.assign(error, message);
-    } else if (typeof message === 'string') {
+    } else if (typeof message === "string") {
       error.message = message;
     }
     const { type, message: errMsg, code } = error;
-    return new this(errMsg || '', code || 500, type);
+    return new this(errMsg || "", code || 500, type);
   }
 }
